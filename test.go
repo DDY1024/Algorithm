@@ -2,77 +2,120 @@ package main
 
 import "fmt"
 
-func lowBit(x int) int {
-	return x & (-x)
-}
-
-func update(idx, n, c int, tree []int) {
-	for i := idx; i <= n; i += lowBit(i) {
-		tree[i] += c
+func maxInt(a, b int) int {
+	if a > b {
+		return a
 	}
+	return b
 }
 
-func getSum(idx int, tree []int) int {
-	ret := 0
-	for i := idx; i > 0; i -= lowBit(i) {
-		ret += tree[i]
+func minOperations(nums []int) int {
+	n, cnt := len(nums), 0
+	if n == 1 {
+		return 0
 	}
-	return ret
-}
-
-func findK(k int, arr []int) (int, int) {
-	l, r, ret := 1, 100000, -1
-	for l <= r {
-		mid := l + (r-l)>>1
-		if getSum(mid, arr) >= k {
-			ret, r = mid, mid-1
-		} else {
-			l = mid + 1
-		}
+	cur := nums[0]
+	for i := 1; i < n; i++ {
+		cnt += maxInt(cur+1, nums[i]) - nums[i]
+		cur = maxInt(cur+1, nums[i])
 	}
-	return ret, getSum(ret, arr) - k
+	return cnt
 }
 
-type MKAverage struct {
-	m, k, div   int
-	front, rear int
-	ele         []int
-	sum         []int
-	cnt         []int
-}
-
-func Constructor(m int, k int) MKAverage {
-	return MKAverage{
-		m:   m,
-		k:   k,
-		div: m - 2*k,
-		ele: make([]int, 100000+10),
-		sum: make([]int, 100000+10),
-		cnt: make([]int, 100000+10),
+func getMaximumXor(nums []int, maximumBit int) []int {
+	n := len(nums)
+	ans := make([]int, 0, n)
+	xor, mask := 0, (1<<uint(maximumBit))-1
+	for i := 0; i < n; i++ {
+		xor ^= nums[i]
 	}
-}
-
-func (this *MKAverage) AddElement(num int) {
-	this.ele[this.rear] = num
-	this.rear++
-	update(num, 100000, num, this.sum)
-	update(num, 100000, 1, this.cnt)
-	if this.rear-this.front > this.m {
-		update(this.ele[this.front], 100000, -this.ele[this.front], this.sum)
-		update(this.ele[this.front], 100000, -1, this.cnt)
-		this.front++
+	for i := n - 1; i >= 0; i-- {
+		ans = append(ans, (xor|mask)^xor)
+		xor ^= nums[i]
+		return ans
 	}
-}
-
-func (this *MKAverage) CalculateMKAverage() int {
-	if this.rear-this.front < this.m {
-		return -1
-	}
-	e1, l1 := findK(this.k, this.cnt)
-	e2, l2 := findK(this.m-this.k, this.cnt)
-	return ((getSum(e2, this.sum) - l2*e2) - (getSum(e1, this.sum) - l1*e1)) / this.div
 }
 
 func main() {
 	fmt.Println(3 + 4>>1)
+}
+
+type Item struct {
+	enter int
+	cost  int
+	idx   int
+}
+
+type MinPQ []*Item
+
+func (pq MinPQ) Len() int { return len(pq) }
+
+func (pq MinPQ) Less(i, j int) bool {
+	if pq[i].cost == pq[j].cost {
+		return pq[i].idx < pq[j].idx
+	}
+	return pq[i].cost < pq[j].cost
+}
+
+func (pq MinPQ) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+}
+
+func (pq *MinPQ) Push(x interface{}) {
+	item := x.(*Item)
+	*pq = append(*pq, item)
+}
+
+func (pq *MinPQ) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	*pq = old[0 : n-1]
+	return item
+}
+
+func (pq *MinPQ) Top() interface{} {
+	if pq.Len() == 0 {
+		return nil
+	}
+	return (*pq)[0]
+}
+
+func maxInt(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func getOrder(tasks [][]int) []int {
+	n := len(tasks)
+	items := make([]*Item, 0, n)
+	for i := 0; i < n; i++ {
+		items = append(items, &Item{
+			enter: tasks[i][0],
+			cost:  tasks[i][1],
+			idx:   i,
+		})
+	}
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].enter <= items[j].enter
+	})
+	ans := make([]int, 0, n)
+	hp := make(MinPQ, 0, n)
+	cur, idx := items[0].enter, 0
+	for idx < n && items[idx].enter <= cur {
+		heap.Push(&hp, items[idx])
+		idx++
+	}
+	for hp.Len() > 0 {
+		item := heap.Pop(&hp).(*Item)
+		ans = append(ans, item.idx)
+		cur += item.cost
+		for idx < n && items[idx].enter <= cur {
+			heap.Push(&hp, items[idx])
+			idx++
+		}
+	}
+	return ans
 }
