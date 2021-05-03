@@ -1,8 +1,6 @@
-package main
+package Library
 
-import (
-	"sort"
-)
+// https://github.com/taktv6/avltree/blob/master/avtltree.go
 
 func maxInt(a, b int) int {
 	if a > b {
@@ -244,72 +242,4 @@ func (t *Tree) Insert(key int, value int) (new *TreeNode) {
 
 func (t *Tree) Exists(key int) bool {
 	return t.root.exists(key)
-}
-
-type Query struct {
-	size   int
-	roomID int
-	idx    int
-}
-
-type RoomInfo struct {
-	size   int
-	roomID int
-}
-
-func closestRoom(rooms [][]int, queries [][]int) []int {
-	n, m := len(rooms), len(queries)
-	roomList := make([]RoomInfo, 0, n)
-	queryList := make([]Query, 0, m)
-	result := make([]int, m)
-	for i := 0; i < n; i++ {
-		roomList = append(roomList, RoomInfo{
-			size:   rooms[i][1],
-			roomID: rooms[i][0],
-		})
-	}
-	for i := 0; i < m; i++ {
-		queryList = append(queryList, Query{
-			size:   queries[i][1],
-			roomID: queries[i][0],
-			idx:    i,
-		})
-	}
-
-	sort.Slice(roomList, func(i, j int) bool {
-		return roomList[i].size > roomList[j].size
-	})
-	sort.Slice(queryList, func(i, j int) bool {
-		return queryList[i].size > queryList[j].size
-	})
-
-	roomIdx, queryIdx := 0, 0
-	avl := NewAVLTree()
-	for queryIdx < m {
-		for roomIdx < n && roomList[roomIdx].size >= queryList[queryIdx].size {
-			avl.Insert(roomList[roomIdx].roomID, roomList[roomIdx].roomID)
-			roomIdx++
-		}
-		nd1 := avl.root.lowerBound(queryList[queryIdx].roomID)
-		nd2 := avl.root.upperBound(queryList[queryIdx].roomID)
-		if nd1 == nil && nd2 == nil {
-			result[queryList[queryIdx].idx] = -1
-		} else if nd1 == nil {
-			result[queryList[queryIdx].idx] = nd2.val
-		} else if nd2 == nil {
-			result[queryList[queryIdx].idx] = nd1.val
-		} else {
-			if absInt(nd1.val-queryList[queryIdx].roomID) <= absInt(nd2.val-queryList[queryIdx].roomID) {
-				result[queryList[queryIdx].idx] = nd1.val
-			} else {
-				result[queryList[queryIdx].idx] = nd2.val
-			}
-		}
-		queryIdx++
-	}
-	return result
-}
-
-func main() {
-
 }
