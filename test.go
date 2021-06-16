@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sort"
+	"time"
 )
 
 func minInt(a, b int) int {
@@ -83,5 +84,11 @@ func minWastedSpace(packages []int, boxes [][]int) int {
 }
 
 func main() {
-	fmt.Println("test")
+	ch := make(chan struct{})
+	go func() {
+		time.Sleep(2 * time.Second)
+		close(ch)
+	}()
+	<-ch
+	fmt.Println("hello, world!")
 }
