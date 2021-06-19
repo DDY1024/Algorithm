@@ -1,89 +1,84 @@
 package main
 
-import (
-	"fmt"
-	"math"
-	"math/bits"
-	"strconv"
-)
-
-func power(a, b int) int {
-	res := 1
-	for b > 0 {
-		if b&1 > 0 {
-			res = res * a
-		}
-		b >>= 1
-		a = a * a
+func maxInt(a, b int) int {
+	if a > b {
+		return a
 	}
-	return res
+	return b
 }
 
-func calc(a, b int) int {
+func minInt(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func largestArea(grid []string) int {
+	n, m := len(grid), len(grid[0])
+	tgrid := make([][]int, n)
+	vis := make([][]bool, n)
+	for i := 0; i < n; i++ {
+		tgrid[i] = make([]int, m)
+		vis[i] = make([]bool, m)
+	}
+
+	dx := []int{-1, 1, 0, 0}
+	dy := []int{0, 0, -1, 1}
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			tgrid[i][j] = int(grid[i][j] - '0')
+		}
+	}
+
+	var check = func(x, y int) bool {
+		if x == 0 || x == n-1 || y == 0 || y == m-1 {
+			return false
+		}
+		for i := 0; i < 4; i++ {
+			xx, yy := x+dx[i], y+dy[i]
+			if xx >= 0 && xx < n && yy >= 0 && yy < m && tgrid[xx][yy] == 0 {
+				return false
+			}
+		}
+		return true
+	}
+
+	var dfs func(x, y, z int) (int, bool)
+	dfs = func(x, y, z int) (int, bool) {
+		vis[x][y] = true
+		total, flag := 1, true
+		if !check(x, y) {
+			flag = false
+		}
+		for i := 0; i < 4; i++ {
+			xx := x + dx[i]
+			yy := y + dy[i]
+			if xx >= 0 && xx < n && yy >= 0 && yy < m && tgrid[xx][yy] == z && !vis[xx][yy] {
+				num, ok := dfs(xx, yy, z)
+				total += num
+				flag = flag && ok
+			}
+		}
+		return total, flag
+	}
+
 	ans := 0
-	for i := 0; i <= b; i++ {
-		ans += power(a, i)
+	for i := 0; i < n; i++ {
+		for j := 0; j < m; j++ {
+			if tgrid[i][j] > 0 {
+				if !vis[i][j] {
+					num, flag := dfs(i, j, tgrid[i][j])
+					if flag {
+						ans = maxInt(ans, num)
+					}
+				}
+			}
+		}
 	}
 	return ans
 }
 
-func smallestGoodBase(n string) string {
-	ni, _ := strconv.ParseInt(n, 10, 64)
-	maxL := bits.Len(uint(ni)) - 1
-	for i := maxL; i > 1; i-- {
-		k := int(math.Pow(float64(ni), 1.0/float64(i)))
-		if calc(k, i) == int(ni) {
-			return strconv.FormatInt(int64(k), 10)
-		}
-
-	}
-	return strconv.FormatInt(ni-1, 10)
-}
-
-// k^(i+1) - 1 / (k-1)  ni
-// 2^n-1
-// 2^n - 1
-//
-// (K+1)^m
-//
-// K^0 + K^1 + ... + K^x = (K^(x+1)-1)/(K-1)
-// 二项式公式
-// (K+1)^m = C(m, 0) * K^0 + ... + C(m, m) * K^m
-//
-// 二项式公式决定了其单调递增特性
-
-// k^
-// (k+1)^m
-
 func main() {
-	// fmt.Println(smallestGoodBase("13"))
-	// fmt.Println(power(686286299, 3))
-	fmt.Println(smallestGoodBase("470988884881403701"))
+	largestArea([]string{"111", "222", "333"})
 }
-
-// 10^9
-//
-//
-//
-//
-// k^1
-// k^1
-// a^0 + a^1 + a^2 ... + a^k = b
-// a = c^0 + c^1 + ... + c^k
-// c^0 + c^2 + ... + c^k
-// 10^9
-// 10^9 + 1
-// 10^18 + 1 1,1,10^9^2
-// 1000,0000, 10^14
-// 1 + 10^7 + 10^14
-// 1 + 10^8 + 10^16
-// 1 + 10^9 + 10^18
-//
-// 2^64
-//
-//
-// 10^18 --> 10^5
-//
-//
-//
-//
