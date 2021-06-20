@@ -1,11 +1,6 @@
 package main
 
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
+import "fmt"
 
 func minInt(a, b int) int {
 	if a < b {
@@ -14,71 +9,54 @@ func minInt(a, b int) int {
 	return b
 }
 
-func largestArea(grid []string) int {
-	n, m := len(grid), len(grid[0])
-	tgrid := make([][]int, n)
-	vis := make([][]bool, n)
+func minDifference(nums []int, queries [][]int) []int {
+	n := len(nums)
+	dp := make([][]int, n)
 	for i := 0; i < n; i++ {
-		tgrid[i] = make([]int, m)
-		vis[i] = make([]bool, m)
+		dp[i] = make([]int, 101)
 	}
-
-	dx := []int{-1, 1, 0, 0}
-	dy := []int{0, 0, -1, 1}
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			tgrid[i][j] = int(grid[i][j] - '0')
+	dp[0][nums[0]]++
+	for i := 1; i < n; i++ {
+		dp[i][nums[i]]++
+		for j := 1; j <= 100; j++ {
+			dp[i][j] += dp[i-1][j]
 		}
 	}
 
-	var check = func(x, y int) bool {
-		if x == 0 || x == n-1 || y == 0 || y == m-1 {
-			return false
-		}
-		for i := 0; i < 4; i++ {
-			xx, yy := x+dx[i], y+dy[i]
-			if xx >= 0 && xx < n && yy >= 0 && yy < m && tgrid[xx][yy] == 0 {
-				return false
+	m := len(queries)
+	ans := make([]int, m)
+	for i := 0; i < m; i++ {
+		l, r := queries[i][0], queries[i][1]
+		preV, minV := -1000, 1000
+		for j := 1; j <= 100; j++ {
+			cnt := dp[r][j]
+			if l-1 >= 0 {
+				cnt -= dp[l-1][j]
+			}
+			if cnt > 0 && j != preV {
+				minV = minInt(minV, j-preV)
+				preV = j
 			}
 		}
-		return true
-	}
-
-	var dfs func(x, y, z int) (int, bool)
-	dfs = func(x, y, z int) (int, bool) {
-		vis[x][y] = true
-		total, flag := 1, true
-		if !check(x, y) {
-			flag = false
-		}
-		for i := 0; i < 4; i++ {
-			xx := x + dx[i]
-			yy := y + dy[i]
-			if xx >= 0 && xx < n && yy >= 0 && yy < m && tgrid[xx][yy] == z && !vis[xx][yy] {
-				num, ok := dfs(xx, yy, z)
-				total += num
-				flag = flag && ok
-			}
-		}
-		return total, flag
-	}
-
-	ans := 0
-	for i := 0; i < n; i++ {
-		for j := 0; j < m; j++ {
-			if tgrid[i][j] > 0 {
-				if !vis[i][j] {
-					num, flag := dfs(i, j, tgrid[i][j])
-					if flag {
-						ans = maxInt(ans, num)
-					}
-				}
-			}
+		if minV >= 1000 {
+			ans[i] = -1
+		} else {
+			ans[i] = minV
 		}
 	}
 	return ans
 }
 
-func main() {
-	largestArea([]string{"111", "222", "333"})
+func doPrint() bool {
+	fmt.Println("hello, world!")
+	return true
 }
+
+func main() {
+	fmt.Println(false && doPrint())
+	fmt.Println(true && doPrint())
+	fmt.Println(true || doPrint())
+	fmt.Println(false || doPrint())
+}
+
+// "||"、"&&" 均是短路运算符
