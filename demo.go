@@ -1,62 +1,82 @@
 package main
 
-import "fmt"
-
-func minInt(a, b int) int {
-	if a < b {
-		return a
+func powMod(a, b, p int) int {
+	res := 1
+	a %= p
+	for b > 0 {
+		if b&1 > 0 {
+			res = res * a % p
+		}
+		a = a * a % p
+		b >>= 1
 	}
-	return b
+	return res
 }
 
-func minDifference(nums []int, queries [][]int) []int {
-	n := len(nums)
-	dp := make([][]int, n)
-	for i := 0; i < n; i++ {
-		dp[i] = make([]int, 101)
+func C(n, m, p int) int {
+	if m > n {
+		return 0
 	}
-	dp[0][nums[0]]++
-	for i := 1; i < n; i++ {
-		dp[i][nums[i]]++
-		for j := 1; j <= 100; j++ {
-			dp[i][j] += dp[i-1][j]
-		}
-	}
-
-	m := len(queries)
-	ans := make([]int, m)
-	for i := 0; i < m; i++ {
-		l, r := queries[i][0], queries[i][1]
-		preV, minV := -1000, 1000
-		for j := 1; j <= 100; j++ {
-			cnt := dp[r][j]
-			if l-1 >= 0 {
-				cnt -= dp[l-1][j]
-			}
-			if cnt > 0 && j != preV {
-				minV = minInt(minV, j-preV)
-				preV = j
-			}
-		}
-		if minV >= 1000 {
-			ans[i] = -1
-		} else {
-			ans[i] = minV
-		}
+	ans := 1
+	for i := 1; i <= m; i++ {
+		a, b := (n+i-m)%p, i%p
+		ans = ans * (a * powMod(b, p-2, p) % p) % p
 	}
 	return ans
 }
 
-func doPrint() bool {
-	fmt.Println("hello, world!")
-	return true
+func Lucas(n, m, p int) int {
+	if m == 0 {
+		return 1
+	}
+	return C(n%p, m%p, p) * Lucas(n/p, m/p, p) % p
+}
+
+func waysToBuildRooms(prevRoom []int) int {
+	n, mod := len(prevRoom), int(1e9+7)
+
+	// 预处理
+	factor := make([]int, n+1)
+	invFactor := make([]int, n+1)
+	factor[0] = 1
+	invFactor[0] = 1
+	for i := 1; i <= n; i++ {
+		factor[i] = factor[i-1] * i % mod
+		invFactor[i] = powMod(factor[i], mod-2, mod)
+	}
+
+	adj := make([][]int, n)
+	for i := 0; i < n; i++ {
+		if prevRoom[i] >= 0 {
+			adj[prevRoom[i]] = append(adj[prevRoom[i]], i)
+		}
+	}
+
+	// 计算组合数
+	// var C = func(n, m int) int {
+	// 	return factor[n] * invFactor[m] % mod * invFactor[n-m] % mod
+	// }
+
+	var solve func(u int) (int, int)
+	solve = func(u int) (int, int) {
+		if len(adj[u]) == 0 {
+			return 1, 1
+		}
+
+		ans, childTotal := 1, 0
+		for _, v := range adj[u] {
+			ca, cb := solve(v)
+			ans = ans * ca % mod * invFactor[cb] % mod
+			childTotal += cb
+		}
+		ans = ans * factor[childTotal] % mod
+		return ans, childTotal + 1
+	}
+
+	ans, _ := solve(0)
+	return ans
 }
 
 func main() {
-	fmt.Println(false && doPrint())
-	fmt.Println(true && doPrint())
-	fmt.Println(true || doPrint())
-	fmt.Println(false || doPrint())
-}
 
-// "||"、"&&" 均是短路运算符
+}
