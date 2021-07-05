@@ -1,7 +1,18 @@
-package main
+#### 一、题目链接
+[最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
 
-import "fmt"
+#### 二、题目大意
+给两个整数数组 A 和 B ，返回两个数组中公共的、长度最长的子数组的长度。
+- 1 <= len(A), len(B) <= 1000
+- 0 <= A[i], B[i] < 100
 
+#### 三、解题思路
+参考官方题解关于 `二分+Rabin-Karp` 解题方法：https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/solution/zui-chang-zhong-fu-zi-shu-zu-by-leetcode-solution/
+
+#### 四、复杂度分析
+
+#### 五、代码
+```go
 func powMod(a, b, c int) int {
 	ret := 1
 	for b > 0 {
@@ -26,7 +37,8 @@ func findLength(nums1 []int, nums2 []int) int {
 	n, m := len(nums1), len(nums2)
 
 	// A[i]，B[i] <= 100
-	mod := int(1e9 + 7) // mod 要大一些
+	mod := int(1e9 + 7) 
+    // mod 要大一些，这样针对本题不需要判定 hash 冲突，实际情况下我们为了保证准确性仍然要检测 hash 冲突问题
 	base := 113
 
 	var check = func(l int) bool {
@@ -72,7 +84,4 @@ func findLength(nums1 []int, nums2 []int) int {
 	return ans
 }
 
-func main() {
-	// fmt.Println("hello, world!")
-	fmt.Println(findLength([]int{1, 2, 3, 2, 1}, []int{3, 2, 1, 4, 7}))
-}
+```
