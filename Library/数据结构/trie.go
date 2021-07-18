@@ -7,17 +7,19 @@ package main
 //
 
 const (
-	BitsLimit = 20
+	BitsLimit = 18
 )
 
 type TrieNode struct {
 	child [2]*TrieNode
+	isR   bool
 	val   int
 	count int
 }
 
 func NewTrieNode() *TrieNode {
 	return &TrieNode{
+		isR:   false,
 		val:   -0xff, // 中间节点
 		count: 0,
 	}
@@ -30,55 +32,59 @@ func checkBit(x, i int) int {
 	return 0
 }
 
-func InsertNode(root *TrieNode, val int) {
+func InsertNode(cur *TrieNode, val int) {
 	for i := BitsLimit - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
-		if root.child[bit] == nil {
-			root.child[bit] = NewTrieNode()
+		if cur.child[bit] == nil {
+			cur.child[bit] = NewTrieNode()
 		}
-		root = root.child[bit]
+		cur = cur.child[bit]
 	}
-	root.val = val
-	root.count++
+	cur.val = val
+	cur.count++
 }
 
-func SearchNode(root *TrieNode, val int) *TrieNode {
+func SearchNode(cur *TrieNode, val int) *TrieNode {
 	for i := BitsLimit - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
-		if root.child[bit] == nil {
+		if cur.child[bit] == nil {
 			return nil
 		}
-		root = root.child[bit]
+		cur = cur.child[bit]
 	}
-	return root
+	return cur
 }
 
 // 0/1 字典树求解最大异或和
-func FindMaxXor(root *TrieNode, val int) int {
+func FindMaxXor(cur *TrieNode, val int) int {
 	for i := BitsLimit - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
-		if root.child[bit^1] != nil {
-			root = root.child[bit^1]
+		if cur.child[bit^1] != nil {
+			cur = cur.child[bit^1]
 		} else {
-			root = root.child[bit]
+			cur = cur.child[bit]
 		}
 	}
-	return val ^ root.val
+	return val ^ cur.val
 }
 
-// 不常用
-func DeleteNode(root *TrieNode, val, pos int) *TrieNode {
-	if root.val >= 0 { // 正常取值
-		if root.val == val {
-			return nil
+// 彻底删除
+func DeleteNode(cur *TrieNode, val, pos int) *TrieNode {
+	if cur.val >= 0 { // 正常取值
+		if cur.val == val {
+			cur.count--
+			if cur.count == 0 {
+				return nil
+			}
+			return cur
 		}
-		return root
+		return cur
 	}
 
 	bit := checkBit(val, pos)
-	root.child[bit] = DeleteNode(root.child[bit], val, pos+1)
-	if root.child[0] == nil && root.child[1] == nil {
+	cur.child[bit] = DeleteNode(cur.child[bit], val, pos-1)
+	if !cur.isR && cur.child[0] == nil && cur.child[1] == nil {
 		return nil
 	}
-	return root
+	return cur
 }
