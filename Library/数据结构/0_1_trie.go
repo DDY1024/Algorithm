@@ -1,12 +1,8 @@
 package main
 
-import "fmt"
-
-//
-//
-// 欠题
-// TODO: 后缀数组
-// https://leetcode-cn.com/problems/longest-common-subpath/
+// 0-1 字典树实现，通常用于求解最大异或和，直接提供一套模板
+// 类似可扩展到通常意义上的字典树
+// dfs 搜索当前的状态便是一条搜索路径
 //
 
 const (
@@ -71,6 +67,7 @@ func FindMaxXor(cur *TrieNode, val int) int {
 	return val ^ cur.val
 }
 
+// 0/1 字典树中由于输入字符串定长，因此对于叶子节点的判断可以直接根据指针判断
 func isLeaf(cur *TrieNode) bool {
 	if cur == nil {
 		return false
@@ -99,51 +96,4 @@ func DeleteNode(cur *TrieNode, val, pos int) *TrieNode {
 		return nil
 	}
 	return cur
-}
-
-type Query struct {
-	val int
-	idx int
-}
-
-func maxGeneticDifference(parents []int, queries [][]int) []int {
-	n := len(parents)
-	adj := make([][]int, n)
-	var r int
-	for i := 0; i < n; i++ {
-		if parents[i] != -1 {
-			adj[parents[i]] = append(adj[parents[i]], i)
-		} else {
-			r = i
-		}
-	}
-
-	qlist := make([][]Query, n)
-	m := len(queries)
-	for i := 0; i < m; i++ {
-		u, val := queries[i][0], queries[i][1]
-		qlist[u] = append(qlist[u], Query{val, i})
-	}
-
-	ans := make([]int, m)
-	root := NewTrieNode()
-	root.isRoot = true
-	var dfs func(u int)
-	dfs = func(u int) {
-		InsertNode(root, u)
-		// 查询
-		for _, q := range qlist[u] {
-			ans[q.idx] = FindMaxXor(root, q.val)
-		}
-		for _, v := range adj[u] {
-			dfs(v)
-		}
-		DeleteNode(root, u, BitsLimit-1)
-	}
-	dfs(r)
-	return ans
-}
-
-func main() {
-	fmt.Println("hello, world!")
 }

@@ -1,79 +1,71 @@
 package main
 
-// 0-1 字典树实现，通常用于求解最大异或和，直接提供一套模板
-// 类似可扩展到通常意义上的字典树
-// dfs 搜索当前的状态便是一条搜索路径
-//
-//
-
-const (
-	BitsLimit = 18
-)
-
-type TrieNode struct {
-	child [2]*TrieNode
-	isR   bool
-	val   int
-	count int
+// 图解 Trie 操作：http://www.cainiaoxueyuan.com/suanfa/5110.html
+// 正常意义上的 trie 实现，仅仅包含小写英文字母
+type Node struct {
+	child  [26]*Node
+	isRoot bool
+	val    string
+	cnt    int
 }
 
-func NewTrieNode() *TrieNode {
-	return &TrieNode{
-		isR:   false,
-		val:   -0xff, // 中间节点
-		count: 0,
+func NewNode() *Node {
+	return &Node{
+		isRoot: false,
+		val:    "", // 空串代表非叶子节点
+		cnt:    0,
 	}
 }
 
-func checkBit(x, i int) int {
-	if x&(1<<uint(i)) > 0 {
-		return 1
-	}
-	return 0
+func getChildIndex(ch byte) int {
+	return int(ch - 'a')
 }
 
-func InsertNode(cur *TrieNode, val int) {
-	for i := BitsLimit - 1; i >= 0; i-- {
-		bit := checkBit(val, i)
-		if cur.child[bit] == nil {
-			cur.child[bit] = NewTrieNode()
+func InsertNode(cur *Node, s string) {
+	for _, ch := range s {
+		idx := getChildIndex(byte(ch))
+		if cur.child[idx] == nil {
+			cur.child[idx] = NewNode()
 		}
-		cur = cur.child[bit]
+		cur = cur.child[idx]
 	}
-	cur.val = val
-	cur.count++
+	cur.val = s
+	cur.cnt++
 }
 
-func SearchNode(cur *TrieNode, val int) *TrieNode {
-	for i := BitsLimit - 1; i >= 0; i-- {
-		bit := checkBit(val, i)
-		if cur.child[bit] == nil {
-			return nil
+func SearchNode(cur *Node, s string) bool {
+	for _, ch := range s {
+		idx := getChildIndex(byte(ch))
+		if cur.child[idx] == nil {
+			return false
 		}
-		cur = cur.child[bit]
+		cur = cur.child[idx]
 	}
-	return cur
+	return cur.val == s // 必须进行相等判断，防止只是作为前缀中间节点的存在
 }
 
-// 0/1 字典树求解最大异或和
-func FindMaxXor(cur *TrieNode, val int) int {
-	for i := BitsLimit - 1; i >= 0; i-- {
-		bit := checkBit(val, i)
-		if cur.child[bit^1] != nil {
-			cur = cur.child[bit^1]
-		} else {
-			cur = cur.child[bit]
+func isLeafNode(cur *Node) bool {
+	for i := 0; i < 26; i++ {
+		if cur.child[i] != nil {
+			return false
 		}
 	}
-	return val ^ cur.val
+	return true
 }
 
-// 彻底删除
-func DeleteNode(cur *TrieNode, val, pos int) *TrieNode {
-	if cur.val >= 0 { // 正常取值
-		if cur.val == val {
-			cur.count--
-			if cur.count == 0 {
+// 常规字典树在删除叶子节点后，针对 trie 树做节点裁剪时需要考虑的情况更多，需要注意下
+func DeleteNode(cur *Node, s string, pos int) *Node {
+	if cur == nil {
+		return nil
+	}
+
+	if pos >= len(s) {
+		if cur.val == s {
+			cur.cnt--
+			if cur.cnt == 0 {
+				cur.val = "" // 恢复节点初始状态
+			}
+			if isLeafNode(cur) && cur.cnt == 0 {
 				return nil
 			}
 			return cur
@@ -81,9 +73,9 @@ func DeleteNode(cur *TrieNode, val, pos int) *TrieNode {
 		return cur
 	}
 
-	bit := checkBit(val, pos)
-	cur.child[bit] = DeleteNode(cur.child[bit], val, pos-1)
-	if !cur.isR && cur.child[0] == nil && cur.child[1] == nil {
+	idx := getChildIndex(s[pos])
+	cur.child[idx] = DeleteNode(cur.child[idx], s, pos+1)
+	if !cur.isRoot && cur.cnt == 0 && isLeafNode(cur) {
 		return nil
 	}
 	return cur
