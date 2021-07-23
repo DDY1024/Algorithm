@@ -147,3 +147,86 @@ func maxGeneticDifference(parents []int, queries [][]int) []int {
 func main() {
 	fmt.Println("hello, world!")
 }
+
+/**
+ * Definition for a Node.
+ * type Node struct {
+ *     Val int
+ *     Next *Node
+ *     Random *Node
+ * }
+ */
+
+type Node struct {
+	Val    int
+	Next   *Node
+	Random *Node
+}
+
+func copyRandomList(head *Node) *Node {
+	if head == nil {
+		return nil
+	}
+
+	cur := head
+	for cur != nil {
+		node := &Node{Val: cur.Val}
+		node.Next = cur.Next
+		cur.Next = node
+		cur = node.Next
+	}
+
+	cur = head
+	for cur != nil {
+		if cur.Random != nil {
+			cur.Next.Random = cur.Random.Next
+		}
+		cur = cur.Next.Next
+	}
+
+	// 注意: 原链表不允许被修改
+	var newHead, newTail, tail *Node
+	cur = head
+	for cur != nil {
+		if newHead == nil {
+			newHead, newTail, tail = cur.Next, cur.Next, cur
+		} else {
+			newTail.Next = cur.Next
+			newTail = newTail.Next
+			tail.Next = cur
+			tail = tail.Next
+		}
+		cur = cur.Next.Next
+	}
+	newTail.Next = nil
+	tail.Next = nil
+	return newHead
+}
+
+// func copyRandomList(head *Node) *Node {
+// 	copyHash := make(map[*Node]*Node)
+
+// 	var NewNode = func(val int) *Node {
+// 		return &Node{
+// 			Val: val,
+// 		}
+// 	}
+
+// 	var copy func(head *Node) *Node
+// 	copy = func(head *Node) *Node {
+// 		if head == nil {
+// 			return nil
+// 		}
+
+// 		if _, ok := copyHash[head]; !ok {
+// 			newHead := NewNode(head.Val)
+// 			copyHash[head] = newHead // 必须提前赋值，防止无限递归
+// 			newHead.Next = copy(head.Next)
+// 			newHead.Random = copy(head.Random)
+// 		}
+
+// 		return copyHash[head]
+// 	}
+
+// 	return copy(head)
+// }
