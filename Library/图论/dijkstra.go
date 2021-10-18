@@ -167,3 +167,37 @@ func main() {
 		fmt.Println("Test: ", i, dis[i][0], dis[i][1])
 	}
 }
+
+// dijkstra 算法本质上是一种贪心算法，每次总是选择当前有效顶点集合的最优点进行扩展。
+// 每次贪心选择时候要考虑的条件可以是一维的，也可以而二维的，需要根据题目要求。
+// https://blog.csdn.net/u013081425/article/details/26020401 例如这题便是同时考虑
+// 距离和花费两个条件，我们在选择松弛节点的时候也需要同时考虑这两个条件
+/*
+for(int i = 1; i <= n; i++)
+    {
+        int M1= INF, M2 = INF, pos;
+        for(int j = 1; j <= n; j++)
+        {
+            if(vis[j]) continue;
+			// 综合考虑两个条件
+            if(dis1[j] < M1 || (dis1[j] == M1 && dis2[j] < M2))
+            {
+                M1 = dis1[j];
+                M2 = dis2[j];
+                pos = j;
+            }
+        }
+        vis[pos] = 1;
+        for(int j = 1; j <= n; j++)
+        {
+            if(vis[j]) continue;
+            int tmp1 = dis1[pos] + Map[pos][j];
+            int tmp2 = dis2[pos] + cost[pos][j];
+            if(tmp1 < dis1[j] || (tmp1 == dis1[j] && tmp2 < dis2[j]))
+            {
+                dis1[j] = tmp1;
+                dis2[j] = tmp2;
+            }
+        }
+    }
+*/
