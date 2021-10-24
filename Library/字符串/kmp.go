@@ -56,3 +56,21 @@ func main() {
 	fmt.Println(kmp("abc", "abcd"))
 	fmt.Println(kmp("abcab", "b"))
 }
+
+// [1, ...., r]
+// next[r] next[next[r]]
+//
+// a --> b
+// next[b] --> next[a]
+// next[i] = next[i-1] (p[k+1], p[i])
+// 数组中
+//
+// nd1 --> nd2
+// nd2: 最长前缀
+// nd1 --> 在所有模式串中匹配的最长前缀
+// 相等: nd1.fail.child has nd2.data
+// nd2 = nd1.fail.child
+// 不相等: nd1.fail, nd1.fail.fail, nd1.fail.fail.fail --> 一步步地在树中进行递归计算
+// trie string 路径唯一确定,
+//
+//
