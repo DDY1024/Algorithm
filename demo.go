@@ -1,99 +1,129 @@
 package main
 
-import (
-	"sort"
-)
+import "fmt"
 
-func kthDistinct(arr []string, k int) string {
-	// sort.Strings()
-	cnt := make(map[string]int)
-	for i := 0; i < len(arr); i++ {
-		cnt[arr[i]]++
-	}
-
-	ans, kth := "", 0
-	for i := 0; i < len(arr); i++ {
-		if cnt[arr[i]] == 1 && kth < k {
-			ans = arr[i]
-			kth++
-		}
-	}
-	if kth < k {
-		return ""
-	}
-	return ans
+func main() {
+	fmt.Println(-2 ^ 3)
 }
 
-type AC struct {
-	s, e, v int
-}
+func countVowelSubstrings(word string) int {
+	n, cnt := len(word), 0
 
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func maxTwoEvents(events [][]int) int {
-	n := len(events)
-	acList := make([]AC, 0, n)
-	for i := 0; i < n; i++ {
-		acList = append(acList, AC{events[i][0], events[i][1], events[i][2]})
-	}
-	sort.Slice(acList, func(i, j int) bool {
-		if acList[i].e == acList[j].e {
-			return acList[i].s < acList[j].s
-		}
-		return acList[i].e < acList[j].e
-	})
-
-	maxV := make([]int, n)
-	maxV[0] = acList[0].v
-	for i := 1; i < n; i++ {
-		maxV[i] = maxInt(maxV[i-1], acList[i].v)
-	}
-
-	ans := acList[0].v
-	for i := 0; i < n; i++ {
-		l, r, tans := 0, n-1, -1
-		for l <= r {
-			mid := l + (r-l)/2
-			if acList[mid].e < events[i][0] {
-				tans = maxInt(tans, maxV[mid])
-				l = mid + 1
-			} else {
-				r = mid - 1
+	// 11111
+	yy := []byte{'a', 'e', 'i', 'o', 'u'}
+	var isValid = func(s string) bool {
+		mask := 0
+		for i := 0; i < len(s); i++ {
+			ok := false
+			for j := 0; j < 5; j++ {
+				if s[i] == yy[j] {
+					ok = true
+					mask |= 1 << uint(j)
+					break
+				}
+			}
+			if !ok {
+				return false
 			}
 		}
-		ans = maxInt(ans, events[i][2])
-		ans = maxInt(ans, tans+events[i][2])
+		return mask == 31
 	}
-	return ans
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if isValid(word[i : j+1]) {
+				cnt++
+			}
+		}
+	}
+	return cnt
 }
 
-func platesBetweenCandles(s string, queries [][]int) []int {
-
-	n := len(s)
+func countVowels(word string) int64 {
+	n := len(word)
 	pSum := make([]int, n)
-	lPos := make([]int, 0, n)
+	// ppSum := make([]int, n)
+
+	var isyy = func(c byte) bool {
+		return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'
+	}
+
 	for i := 0; i < n; i++ {
-		if s[i] == '|' {
-			lPos = append(lPos, i)
-		}
-		if s[i] == '*' {
+		if isyy(word[i]) {
 			pSum[i]++
 		}
-		if i-1 >= 0 {
+		if i > 0 {
 			pSum[i] += pSum[i-1]
 		}
 	}
+
+	cur := pSum[0]
+	ans := pSum[0]
+	for i := 1; i < n; i++ {
+		ans += (i + 1) * pSum[i]
+		ans -= cur
+		cur += pSum[i]
+	}
+	return int64(ans)
+}
+
+func minimizedMaximum(n int, quantities []int) int {
+	m := len(quantities)
 
 	var minInt = func(a, b int) int {
 		if a < b {
 			return a
 		}
 		return b
+	}
+
+	var can = func(x int) bool {
+		idx, need, r := 0, 0, quantities[0]
+		for {
+			if r == 0 {
+				idx++
+				if idx >= m {
+					break
+				}
+				r = quantities[idx]
+			}
+			r -= minInt(x, r)
+			need++
+		}
+		return need <= n
+	}
+
+	l, r, ret := 1, 100000, 0x3f3f3f3f
+	for l <= r {
+		mid := l + (r-l)/2
+		if can(mid) {
+			ret = minInt(ret, mid)
+			r = mid - 1
+		} else {
+			l = mid + 1
+		}
+	}
+	if ret >= 0x3f3f3f3f {
+		return -1
+	}
+	return ret
+}
+
+// 本题解题思路需要从数据范围中挖掘
+// 1. 10 <= timej, maxTime <= 100 意味着最终结果最多经过 10 条边
+// 2. 每个顶点最多有四条出边
+// 3. 加上一定的剪枝策略，我们完全可以在较短时间内进行求解
+type Edge struct {
+	v, w int
+}
+
+func maximalPathQuality(values []int, edges [][]int, maxTime int) int {
+	n, m := len(values), len(edges)
+	adj := make([][]*Edge, n)
+	for i := 0; i < m; i++ {
+		u, v, w := edges[i][0], edges[i][1], edges[i][2]
+		adj[u] = append(adj[u], &Edge{v, w})
+		adj[v] = append(adj[v], &Edge{u, w})
 	}
 
 	var maxInt = func(a, b int) int {
@@ -103,136 +133,34 @@ func platesBetweenCandles(s string, queries [][]int) []int {
 		return b
 	}
 
-	var calc = func(i, j int, sum []int) int {
-		ret := sum[j]
-		if i > 0 {
-			ret -= sum[i-1]
+	ans := 0
+	path := make(map[int]int, 20)
+	path[0]++
+	var dfs func(u, cost int)
+	dfs = func(u, cost int) {
+		if u == 0 {
+			tmp := 0
+			for u, c := range path {
+				if c > 0 {
+					tmp += values[u]
+				}
+			}
+			ans = maxInt(ans, tmp)
+			return
 		}
-		return ret
-	}
 
-	// >= x 最小值
-	var b1 = func(x int) int {
-		l, r, ans := 0, len(lPos)-1, n
-		for l <= r {
-			mid := l + (r-l)/2
-			if lPos[mid] >= x {
-				ans = minInt(ans, lPos[mid])
-				r = mid - 1
-			} else {
-				l = mid + 1
+		for _, e := range adj[u] {
+			if cost+e.w > maxTime {
+				continue
+			}
+			path[e.v]++
+			dfs(e.v, cost+e.w)
+			path[e.v]--
+			if path[e.v] == 0 {
+				delete(path, e.v)
 			}
 		}
-		return ans
 	}
-
-	// <= x 最大值
-	var b2 = func(x int) int {
-		l, r, ans := 0, len(lPos)-1, 0
-		for l <= r {
-			mid := l + (r-l)/2
-			if lPos[mid] <= x {
-				ans = maxInt(ans, lPos[mid])
-				l = mid + 1
-			} else {
-				r = mid - 1
-			}
-		}
-		return ans
-	}
-
-	ans := make([]int, len(queries))
-	for i := 0; i < len(queries); i++ {
-		s, e := queries[i][0], queries[i][1]
-		l, r := b1(s), b2(e)
-		if l < r {
-			ans[i] = calc(l, r, pSum)
-		}
-	}
-
+	dfs(0, 0)
 	return ans
-}
-
-func countCombinations(pieces []string, positions [][]int) int {
-	n := len(pieces)
-	for i := 0; i < n; i++ {
-		positions[i][0]--
-		positions[i][1]--
-	}
-
-	dx := []int{-1, 1, 0, 0, 1, 1, -1, -1}
-	dy := []int{0, 0, -1, 1, 1, -1, 1, -1}
-	dir := make([]int, n)
-	step := make([]int, n)
-	curPos := make([][]int, n)
-	tstep := make([]int, n)
-	for i := 0; i < n; i++ {
-		curPos[i] = make([]int, 2)
-	}
-
-	var isValid = func() int {
-		for i := 0; i < n; i++ {
-			tstep[i] = step[i]
-			curPos[i][0], curPos[i][1] = positions[i][0], positions[i][1]
-		}
-		mark := [8][8]int{}
-		for {
-			isMoved := false
-			for i := 0; i < n; i++ {
-				if tstep[i] > 0 {
-					isMoved = true
-					tstep[i]--
-					curPos[i][0] += dx[dir[i]]
-					curPos[i][1] += dy[dir[i]]
-				}
-				mark[curPos[i][0]][curPos[i][1]]++
-			}
-			if !isMoved { // 移动过程中没有发生重叠
-				return 1
-			}
-
-			for i := 0; i < n; i++ {
-				if mark[curPos[i][0]][curPos[i][1]] > 1 {
-					return 0
-				}
-				mark[curPos[i][0]][curPos[i][1]] = 0
-			}
-		}
-	}
-
-	var calc func(idx int) int
-	calc = func(idx int) int {
-		if idx >= n {
-			return isValid()
-		}
-		var l, r int
-		switch pieces[idx][0] {
-		case 'r':
-			l, r = 0, 3
-		case 'q':
-			l, r = 0, 7
-		case 'b':
-			l, r = 4, 7
-		}
-
-		ans := 0
-		x, y := positions[idx][0], positions[idx][1]
-		for i := l; i <= r; i++ {
-			for j := 1; j <= 8; j++ {
-				if x+j*dx[i] >= 0 && x+j*dx[i] < 8 && y+j*dy[i] >= 0 && y+j*dy[i] < 8 {
-					dir[idx] = i
-					step[idx] = j
-					ans += calc(idx + 1)
-				}
-			}
-		}
-
-		// 不移动随便选择一个方向即可
-		dir[idx] = 0
-		step[idx] = 0
-		ans += calc(idx + 1)
-		return ans
-	}
-
-	return calc(0)
 }
