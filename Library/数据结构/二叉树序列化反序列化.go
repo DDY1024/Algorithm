@@ -6,8 +6,6 @@ import (
 )
 
 // 提供一种二叉树序列化/反序列化的方式
-//
-
 type Node struct {
 	left  *Node
 	right *Node
