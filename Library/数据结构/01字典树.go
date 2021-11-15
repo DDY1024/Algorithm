@@ -1,17 +1,20 @@
 package main
 
-// 0-1 字典树实现，通常用于求解最大异或和，直接提供一套模板
-// 类似可扩展到通常意义上的字典树
-// dfs 搜索当前的状态便是一条搜索路径
+// 0-1 字典树: 每个节点的子节点只包含 0 和 1 两个子节点
+// 利用 0-1 字典树求解的问题:
+// 1. 最大异或和：利用字典树的前缀索引能力，总是朝着相反 bit 位搜索
+// 2.
+
 const (
-	BitsLimit = 18
+	MaxBits = 18
 )
 
 type TrieNode struct {
 	child  [2]*TrieNode
-	isRoot bool // root 节点标志，在递归删除时该节点是不允许被销毁的
-	val    int  // 节点取值，可自定义
-	cnt    int  // 出现次数
+	isRoot bool // 是否根节点，根节点不进行删除
+	// isLeaf bool // 是否叶子节点
+	val int // 取值
+	cnt int // 出现次数
 }
 
 func NewTrieNode() *TrieNode {
@@ -23,14 +26,15 @@ func NewTrieNode() *TrieNode {
 }
 
 func checkBit(x, i int) int {
-	if x&(1<<uint(i)) > 0 {
-		return 1
-	}
-	return 0
+	return (x >> uint(i)) & 1
+	// if x&(1<<uint(i)) > 0 {
+	// 	return 1
+	// }
+	// return 0
 }
 
 func InsertNode(cur *TrieNode, val int) {
-	for i := BitsLimit - 1; i >= 0; i-- {
+	for i := MaxBits - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
 		if cur.child[bit] == nil {
 			cur.child[bit] = NewTrieNode()
@@ -42,7 +46,7 @@ func InsertNode(cur *TrieNode, val int) {
 }
 
 func SearchNode(cur *TrieNode, val int) *TrieNode {
-	for i := BitsLimit - 1; i >= 0; i-- {
+	for i := MaxBits - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
 		if cur.child[bit] == nil {
 			return nil
@@ -52,11 +56,11 @@ func SearchNode(cur *TrieNode, val int) *TrieNode {
 	return cur
 }
 
-// 0/1 字典树求解最大异或和
+// 0/1 字典树搜索求解最大异或和
 func FindMaxXor(cur *TrieNode, val int) int {
-	for i := BitsLimit - 1; i >= 0; i-- {
+	for i := MaxBits - 1; i >= 0; i-- {
 		bit := checkBit(val, i)
-		if cur.child[bit^1] != nil {
+		if cur.child[bit^1] != nil { // 优先朝着相反 bit 方向搜索
 			cur = cur.child[bit^1]
 		} else {
 			cur = cur.child[bit]
