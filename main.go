@@ -2,22 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
 func main() {
-	// fmt.Println("Hello, World!")
-	// runtime.KeepAlive()
-	// sort.Slice()
-	// random.Sh
-	// rand.Shuffle()
-	// fmt.Println(do("0000"))
-	// fmt.Println(do("25525511135"))
-	// fmt.Println(do("1111"))
-	// fmt.Println(do("101023"))
-	// var a, b int
-	// fmt.Scanf("%d %d\n", &a, &b)
-	// fmt.Println(a, b)
-	fmt.Println((1 << 31) - 1)
+	// fmt.Println(isPrime(1337))
+	// largestSumAfterKNegations([]int{2, -3, -1, 5, -4}, 2)
+	nums := []int{3, 4, 5, 5}
+	fmt.Println(sort.Search(len(nums), func(i int) bool {
+		return nums[i]+2 >= 7
+	}))
 }
-
-// https://github.com/SharingSource/LogicStack-LeetCode/tree/main/PDF

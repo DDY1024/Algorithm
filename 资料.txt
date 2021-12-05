@@ -32,3 +32,7 @@ http://courses.csail.mit.edu/6.851/spring12/lectures/
 
 9. ACM paper
 https://github.com/ericliu859/AcmPaper
+
+10. TODO
+- 数论简明教程
+- 线性代数简明教程

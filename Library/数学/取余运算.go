@@ -5,11 +5,9 @@ import (
 	"math"
 )
 
-// 1. 快速幂
+// 1. 快速幂计算
 // x^y % n --> (x%n)^y % n
 func powMod(x, y, n int) int {
-
-	// 先进行一次取余操作
 	x = x % n
 	ans := 1
 	for y > 0 {
@@ -22,15 +20,7 @@ func powMod(x, y, n int) int {
 	return ans
 }
 
-// 2. 指数循环节问题
-// gcd(A, N) = 1, 则存在 A^k = 1 (mod N)，直接在 [1, N] 区间内验证即可
-// https://www.geeksforgeeks.org/multiplicative-order/
-
-// 3. 给定 n、p，其中 p 为素数，判断是否存在 x 使得 (x * x) % p = n % p
-// 判断方法：n^[(p-1)/2]%p = 1
-// https://www.geeksforgeeks.org/eulers-criterion-check-if-square-root-under-modulo-p-exists/
-
-// 4. 大整数乘法取余
+// 2. 快速乘法取模
 // a * b % c
 func mulMod(a, b, c int) int {
 	res := 0
@@ -44,6 +34,10 @@ func mulMod(a, b, c int) int {
 	}
 	return res
 }
+
+// 3. 给定 n、p，其中 p 为素数，判断是否存在 x 使得 (x * x) % p = n % p
+// 判断方法：n^[(p-1)/2]%p = 1
+// https://www.geeksforgeeks.org/eulers-criterion-check-if-square-root-under-modulo-p-exists/
 
 // 5. big_number % x
 // big_num 字符串表示

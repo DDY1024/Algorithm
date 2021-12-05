@@ -1,6 +1,5 @@
 package Library
 
-// 结构体自定义: 明确优先级比较规则
 type Item struct {
 	val int
 	idx int

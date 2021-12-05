@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 /*
 * 简单Radix-Tree
 * 只需要简单的插入、查询、删除、子树遍历操作即可
@@ -207,35 +205,35 @@ func main() {
 }
 */
 
-func main() {
-	root := NewNode("", nil)
-	InsertNode(root, "a", &Entry{key: "a", val: "a"})
-	InsertNode(root, "ab", &Entry{key: "ab", val: "ab"})
-	DeleteNode(root, "ab")
-	ok1, nd1 := GetNode(root, "ab")
-	fmt.Println(ok1, nd1)
-	ok2, nd2 := GetNode(root, "a")
-	fmt.Println(ok2, nd2)
-	InsertNode(root, "abcd", &Entry{key: "abcd", val: "abcd"})
-	InsertNode(root, "abc", &Entry{key: "abc", val: "abc"})
-	DeleteNode(root, "abc")
-	ok3, nd3 := GetNode(root, "abcd")
-	fmt.Println(ok3, nd3)
-	InsertNode(root, "abcde", &Entry{key: "abcde", val: "abcde"})
-	InsertNode(root, "abcdf", &Entry{key: "abcdf", val: "abcdf"})
-	DeleteNode(root, "abcd")
-	ok4, nd4 := GetNode(root, "a")
-	fmt.Println(ok4, nd4)
-	ok5, nd5 := GetNode(root, "abcde")
-	fmt.Println(ok5, nd5)
-	ok6, nd6 := GetNode(root, "abcdf")
-	fmt.Println(ok6, nd6)
-	InsertNode(root, "abc", &Entry{key: "abc", val: "abc"})
-	InsertNode(root, "abcd", &Entry{key: "abcd", val: "abcd"})
-	DeleteNode(root, "abc")
-	ok7, nd7 := GetNode(root, "abcde")
-	fmt.Println(ok7, nd7)
-	DeleteNode(root, "abcd")
-	ok8, nd8 := GetNode(root, "a")
-	fmt.Println(ok8, nd8)
-}
+// func main() {
+// 	root := NewNode("", nil)
+// 	InsertNode(root, "a", &Entry{key: "a", val: "a"})
+// 	InsertNode(root, "ab", &Entry{key: "ab", val: "ab"})
+// 	DeleteNode(root, "ab")
+// 	ok1, nd1 := GetNode(root, "ab")
+// 	fmt.Println(ok1, nd1)
+// 	ok2, nd2 := GetNode(root, "a")
+// 	fmt.Println(ok2, nd2)
+// 	InsertNode(root, "abcd", &Entry{key: "abcd", val: "abcd"})
+// 	InsertNode(root, "abc", &Entry{key: "abc", val: "abc"})
+// 	DeleteNode(root, "abc")
+// 	ok3, nd3 := GetNode(root, "abcd")
+// 	fmt.Println(ok3, nd3)
+// 	InsertNode(root, "abcde", &Entry{key: "abcde", val: "abcde"})
+// 	InsertNode(root, "abcdf", &Entry{key: "abcdf", val: "abcdf"})
+// 	DeleteNode(root, "abcd")
+// 	ok4, nd4 := GetNode(root, "a")
+// 	fmt.Println(ok4, nd4)
+// 	ok5, nd5 := GetNode(root, "abcde")
+// 	fmt.Println(ok5, nd5)
+// 	ok6, nd6 := GetNode(root, "abcdf")
+// 	fmt.Println(ok6, nd6)
+// 	InsertNode(root, "abc", &Entry{key: "abc", val: "abc"})
+// 	InsertNode(root, "abcd", &Entry{key: "abcd", val: "abcd"})
+// 	DeleteNode(root, "abc")
+// 	ok7, nd7 := GetNode(root, "abcde")
+// 	fmt.Println(ok7, nd7)
+// 	DeleteNode(root, "abcd")
+// 	ok8, nd8 := GetNode(root, "a")
+// 	fmt.Println(ok8, nd8)
+// }

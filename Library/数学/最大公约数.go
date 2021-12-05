@@ -6,14 +6,14 @@ const (
 	maxn = 1010
 )
 
-// Gcd 最大公约数
+// 递归求解最大公约数
 // 算法复杂度: O(log(max(a,b)))
-// Gcd(n, n+1) = 1 即相邻的两个整数是互质的
-func Gcd(a, b int) int {
+// 结论一: gcd(n, n+1) = 1，即相邻的两个整数是互质的
+func gcd(a, b int) int {
 	if b == 0 {
 		return a
 	}
-	return Gcd(b, a%b)
+	return gcd(b, a%b)
 }
 
 // 浮点数 最大公约数

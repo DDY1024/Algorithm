@@ -1,7 +1,6 @@
 package main
 
-// 图解 Trie 操作：http://www.cainiaoxueyuan.com/suanfa/5110.html
-// 正常意义上的 trie 实现，仅仅包含小写英文字母
+// 参考：http://www.cainiaoxueyuan.com/suanfa/5110.html
 type Node struct {
 	child  [26]*Node
 	isRoot bool
