@@ -268,18 +268,6 @@ void find_prime(int64 n, int k) {
     return ;
 }
 
-// 欧拉函数
-int get_euler(int x) {
-    int i, ret = x;
-    for(i = 2; i * i <= x; ++i) {
-        if(x % i == 0) {
-            ret = ret / i * (i - 1);
-            while(x % i == 0) x /= i;
-        }
-    }
-    if(x > 1) ret = ret / x * (x - 1);
-    return ret;
-}
 
 // 递推求解欧拉函数
 int phi[maxn+10];
