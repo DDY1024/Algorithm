@@ -19,7 +19,6 @@ func (h *MinHeap) Pop() interface{} {
 	return x
 }
 
-// heap 标准库内部做了调整 --> 因此我们每次取最值元素只需要关注 "0" 索引位置处的元素即可。
 func (h *MinHeap) Top() interface{} {
 	if h.Len() == 0 {
 		return nil

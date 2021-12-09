@@ -38,7 +38,7 @@ func (pq *MaxPQ) Top() interface{} {
 	if pq.Len() == 0 {
 		return nil
 	}
-	return (*pq)[0]
+	return (*pq)[0] // 下标位置 0 即为最大或最小元素
 }
 
 // 2. 小顶堆
