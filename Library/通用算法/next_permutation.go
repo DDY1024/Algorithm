@@ -10,6 +10,7 @@ func nextPermutaion(bits []byte) {
 	if idx < 0 {
 		return
 	}
+
 	for i := n - 1; i > idx; i-- {
 		if bits[i] > bits[idx] {
 			bits[i], bits[idx] = bits[idx], bits[i]
