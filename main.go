@@ -13,4 +13,7 @@ func main() {
 	x := 7
 	x &^= 1
 	fmt.Println(x)
+	bs := []byte("wxy")
+	xx := append(bs, 'z')
+	fmt.Println(xx)
 }

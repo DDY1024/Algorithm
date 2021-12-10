@@ -11,7 +11,7 @@ func NewBitMap(size uint64) *Bitmap {
 	size = (size + 7) / 8 * 8 // 对齐校准
 	bitmap := &Bitmap{
 		size: size,
-		data: make([]byte, size/8, size/8),
+		data: make([]byte, size/8),
 	}
 	return bitmap
 }
@@ -60,8 +60,7 @@ func (b *Bitmap) Resize(size uint64) {
 	if b.size == size {
 		return
 	}
-	data := make([]byte, size/8, size/8)
-	copy(data, b.data) // 1. dst，src
+	data := make([]byte, size/8)
 	b.data = data
 	b.size = size
 }
@@ -71,7 +70,7 @@ func (b *Bitmap) Size() uint64 {
 }
 
 func (b *Bitmap) Clear() {
-	b.data = make([]byte, b.size/8, b.size/8)
+	b.data = make([]byte, b.size/8)
 }
 
 func (b *Bitmap) Data() []byte {
