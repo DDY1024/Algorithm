@@ -101,6 +101,7 @@ func (bf *BloomFilter) EncodeData() []byte {
 	return buf.Bytes()
 }
 
+// 反序列化
 func DecodeFromData(data []byte, opts ...Option) *BloomFilter {
 	opt := Options{
 		locker: &sync.Mutex{},
