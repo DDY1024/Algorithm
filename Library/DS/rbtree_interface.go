@@ -17,12 +17,17 @@ const (
 	Black
 )
 
+// k1 == k2: 0
+// k1 < k2: -1
+// k1 > k2: 1
+type comparator func(k1, k2 interface{}) int
+
 type Node struct {
 	parent *Node
 	left   *Node
 	right  *Node
 	color  Color
-	key    int // 可拓展其它类型，此处只是为了刷题方便
+	key    interface{}
 	value  interface{}
 }
 
@@ -95,22 +100,31 @@ func maximum(n *Node) *Node {
 	return n
 }
 
+func getColor(n *Node) Color {
+	if n == nil {
+		return Black
+	}
+	return n.color
+}
+
 type RbTree struct {
 	root *Node
 	size int
+	cmp  comparator
 }
 
-func NewRBTree() *RbTree {
-	return &RbTree{}
+func NewRBTree(cmp comparator) *RbTree {
+	return &RbTree{
+		root: nil,
+		size: 0,
+		cmp:  cmp,
+	}
 }
 
 func (t *RbTree) Clear() {
 	t.root = nil
 	t.size = 0
-}
-
-func (t *RbTree) Begin() *Node {
-	return t.First()
+	t.cmp = nil
 }
 
 func (t *RbTree) First() *Node {
@@ -118,10 +132,6 @@ func (t *RbTree) First() *Node {
 		return nil
 	}
 	return minimum(t.root)
-}
-
-func (t *RbTree) RBegin() *Node {
-	return t.Last()
 }
 
 func (t *RbTree) Last() *Node {
@@ -142,12 +152,12 @@ func (t *RbTree) Size() int {
 	return t.size
 }
 
-func (t *RbTree) Find(key int) *Node {
+func (t *RbTree) Find(key interface{}) *Node {
 	x := t.root
 	for x != nil {
-		if key < x.key {
+		if t.cmp(key, x.key) < 0 {
 			x = x.left
-		} else if key == x.key {
+		} else if t.cmp(key, x.key) == 0 {
 			return x
 		} else {
 			x = x.right
@@ -156,13 +166,13 @@ func (t *RbTree) Find(key int) *Node {
 	return nil
 }
 
-func (t *RbTree) Insert(key int, value interface{}) {
+func (t *RbTree) Insert(key interface{}, value interface{}) {
 	x := t.root
 	var y *Node
 
 	for x != nil {
 		y = x
-		if key < x.key {
+		if t.cmp(key, x.key) < 0 {
 			x = x.left
 		} else {
 			x = x.right
@@ -176,7 +186,7 @@ func (t *RbTree) Insert(key int, value interface{}) {
 		z.color = Black
 		t.root = z
 		return
-	} else if z.key < y.key {
+	} else if t.cmp(z.key, y.key) < 0 {
 		y.left = z
 	} else {
 		y.right = z
@@ -381,16 +391,16 @@ func (t *RbTree) rightRotate(x *Node) {
 	x.parent = y
 }
 
-func (t *RbTree) LowerBound(key int) *Node {
+func (t *RbTree) LowerBound(key interface{}) *Node {
 	return t.findLowerBoundNode(t.root, key)
 }
 
-func (t *RbTree) findLowerBoundNode(x *Node, key int) *Node {
+func (t *RbTree) findLowerBoundNode(x *Node, key interface{}) *Node {
 	if x == nil {
 		return nil
 	}
 
-	if key <= x.key {
+	if t.cmp(key, x.key) <= 0 {
 		ret := t.findLowerBoundNode(x.left, key)
 		if ret == nil {
 			return x
@@ -401,16 +411,16 @@ func (t *RbTree) findLowerBoundNode(x *Node, key int) *Node {
 	return t.findLowerBoundNode(x.right, key)
 }
 
-func (t *RbTree) UpperBound(key int) *Node {
+func (t *RbTree) UpperBound(key interface{}) *Node {
 	return t.findUpperBoundNode(t.root, key)
 }
 
-func (t *RbTree) findUpperBoundNode(x *Node, key int) *Node {
+func (t *RbTree) findUpperBoundNode(x *Node, key interface{}) *Node {
 	if x == nil {
 		return nil
 	}
 
-	if x.key <= key {
+	if t.cmp(x.key, key) <= 0 {
 		return t.findUpperBoundNode(x.right, key)
 	}
 
@@ -421,15 +431,56 @@ func (t *RbTree) findUpperBoundNode(x *Node, key int) *Node {
 	return x
 }
 
-func (t *RbTree) Traversal(do func(key int, val interface{})) {
-	for node := t.First(); node != nil; node = node.Next() {
-		do(node.key, node.value)
+// 测试题目: https://leetcode-cn.com/problems/sequentially-ordinal-rank-tracker/submissions/
+type SORTracker struct {
+	tree *RbTree
+	cur  *Node
+}
+
+type Item struct {
+	name  string
+	score int
+}
+
+func Constructor() SORTracker {
+	tree := NewRBTree(func(v1, v2 interface{}) int {
+		it1 := v1.(*Item)
+		it2 := v2.(*Item)
+		if it1.score < it2.score {
+			return -1
+		}
+		if it1.score > it2.score {
+			return 1
+		}
+		if it1.name == it2.name {
+			return 0
+		}
+		if it1.name > it2.name {
+			return -1
+		}
+		return 1
+	})
+	tree.Insert(&Item{"", 0x3f3f3f3f}, nil)
+	return SORTracker{
+		tree: tree,
+		cur:  tree.First(),
 	}
 }
 
-func getColor(n *Node) Color {
-	if n == nil {
-		return Black
+func (this *SORTracker) Add(name string, score int) {
+	item := &Item{name, score}
+	this.tree.Insert(item, nil)
+	if this.tree.cmp(this.cur.key, item) < 0 {
+		this.cur = this.cur.Next()
 	}
-	return n.color
+}
+
+func (this *SORTracker) Get() string {
+	this.cur = this.cur.Prev()
+	item := this.cur.key.(*Item)
+	return item.name
+}
+
+func main() {
+	Constructor()
 }

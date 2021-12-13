@@ -82,6 +82,7 @@ func (self *AvlTree) UpperBound(key int) *AvlNode {
 	return self.root.UpperBound(key)
 }
 
+// next、prev 需要有 parent 指针
 type AvlNode struct {
 	key    int // types.Hashable
 	value  interface{}
