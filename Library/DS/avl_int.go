@@ -22,7 +22,9 @@ type AvlTree struct {
 }
 
 func NewAvlTree() *AvlTree {
-	return &AvlTree{}
+	return &AvlTree{
+		size: 0,
+	}
 }
 
 func (self *AvlTree) Root() *AvlNode {
@@ -82,9 +84,8 @@ func (self *AvlTree) UpperBound(key int) *AvlNode {
 	return self.root.UpperBound(key)
 }
 
-// next、prev 需要有 parent 指针
 type AvlNode struct {
-	key    int // types.Hashable
+	key    int
 	value  interface{}
 	height int
 	left   *AvlNode
@@ -225,7 +226,7 @@ func (self *AvlNode) Put(key int, value interface{}) (_ *AvlNode, updated bool) 
 
 	if self.key == key {
 		self.value = value
-		return self, true // updated
+		return self, true
 	}
 
 	if key < self.key {
