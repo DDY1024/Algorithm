@@ -5,10 +5,10 @@ import (
 	"math"
 )
 
-//
+// TODO: 今天复习下 rmq 算法，找资料将这块模板补齐
 // 换一种角度考虑，其实其应该理解成 ”倍增 DP“
 // 区间范围最值，实际上如果两个区间满足加法性质，均可以采用 rmq 思想来求解
-//
+// O(nlogn)
 
 var ls = func(x int) int { return 1 << uint(x) }
 
