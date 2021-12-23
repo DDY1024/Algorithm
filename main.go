@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -9,33 +8,29 @@ func main() {
 
 }
 
-// 格里高利历闰年计算方法: https://zh.wikipedia.org/wiki/%E9%97%B0%E5%B9%B4
-func dayOfYear(date string) int {
-	days := [][]int{
-		{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-		{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-	}
+func repeatedStringMatch(a string, b string) int {
+	n, m := len(a), len(b)
 
-	// 闰年的判断不止这么简单
-	var isLeapYear = func(x int) int {
-		if (x%100 == 0 && x%400 == 0) || x%4 == 0 {
-			return 1
+	var construct = func(s string, c int) string {
+		var res strings.Builder
+		res.Grow(len(s) * c)
+		for i := 1; i <= c; i++ {
+			res.WriteString(s)
 		}
-		return 0
+		return res.String()
 	}
 
-	arr := strings.Split(date, "-")
-	year, _ := strconv.ParseInt(arr[0], 10, 64)
-	month, _ := strconv.ParseInt(arr[1], 10, 64)
-	day, _ := strconv.ParseInt(arr[2], 10, 64)
-
-	ans := 0
-	for i := 1; i < int(month); i++ {
-		ans += days[isLeapYear(int(year))][i]
+	cc := m / n
+	if m%n > 0 {
+		cc++
 	}
-	ans += int(day)
-	return ans
+
+	if strings.Contains(construct(a, cc), b) {
+		return cc
+	}
+
+	if strings.Contains(construct(a, cc+1), b) {
+		return cc + 1
+	}
+	return -1
 }
-
-// 闰年 2 月 29 天
-// 平年 2 月 28 天
