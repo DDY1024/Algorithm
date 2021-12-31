@@ -29,6 +29,7 @@ func visiblePoints(points [][]int, angle int, location []int) int {
 			sameCnt++
 			continue
 		}
+		// [-180, 180]
 		arcList = append(arcList, math.Atan2(float64(points[i][1]-sy), float64(points[i][0]-sx)))
 	}
 
