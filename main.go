@@ -1,80 +1,82 @@
 package main
 
-import "sort"
-
-type Node struct {
-	child [26]*Node
-	flag  bool
-}
-
-func NewNode() *Node {
-	return &Node{
-		flag: false,
+func maxInt(a, b int) int {
+	if a > b {
+		return a
 	}
+	return b
 }
 
-func getChildIndex(ch byte) int {
-	return int(ch - 'a')
-}
-
-func InsertNode(cur *Node, s string) {
-	for _, ch := range s {
-		idx := getChildIndex(byte(ch))
-		if cur.child[idx] == nil {
-			cur.child[idx] = NewNode()
-		}
-		cur = cur.child[idx]
+func minInt(a, b int) int {
+	if a < b {
+		return a
 	}
-	cur.flag = true
+	return b
 }
 
-func SearchNode(cur *Node, s string) bool {
-	for _, ch := range s {
-		idx := getChildIndex(byte(ch))
-		if cur.child[idx] == nil {
-			return false
-		}
-		cur = cur.child[idx]
+func maximumInvitations(favorite []int) int {
+	n, ret := len(favorite), 0
+	dis := make([]int, n)
+	label := make([]int, n)
+	time := 0
+	for i := 0; i < n; i++ {
+		dis[i] = -1
+		label[i] = -1
 	}
-	return cur.flag
-}
 
-func findAllConcatenatedWordsInADict(words []string) []string {
-	sort.Slice(words, func(i, j int) bool {
-		return len(words[i]) < len(words[j])
-	})
-
-	root := NewNode()
-	var check func(nd *Node, word string) bool
-	check = func(nd *Node, word string) bool {
-		if len(word) == 0 { // 小拼大肯定是大于 1 个的
-			return true
-		}
-
-		for i, ch := range word {
-			if nd.child[getChildIndex(byte(ch))] == nil {
-				return false
+	// 1. 第一种情况: 求解长度最大的有向环
+	var maxCycle func(x, d int)
+	maxCycle = func(x, d int) {
+		dis[x] = d
+		label[x] = time
+		if dis[favorite[x]] != -1 { // 该节点已经被遍历过
+			if label[x] == label[favorite[x]] { // 相邻两个顶点必须属于同一次遍历过程，否则会计算错误
+				ret = maxInt(ret, dis[x]-dis[favorite[x]]+1)
 			}
-			nd = nd.child[getChildIndex(byte(ch))]
-			if nd.flag && check(root, word[i+1:]) {
-				return true
-			}
+			return
 		}
-		return false
+		maxCycle(favorite[x], d+1)
 	}
 
-	ret := make([]string, 0, len(words))
-	for i := 0; i < len(words); i++ {
-		if len(words[i]) == 0 {
-			continue
-		}
-		if check(root, words[i]) { // 优化: 对于可以被其它更短字符串拼接而成的字符串，不需要加入字典树
-			ret = append(ret, words[i])
-		} else {
-			InsertNode(root, words[i])
+	for i := 0; i < n; i++ {
+		if dis[i] == -1 {
+			time++ // 标识第几次遍历
+			maxCycle(i, 0)
 		}
 	}
-	return ret
+
+	// 2. 所有 "链条 --> A --> B <-- 链条"
+	//                  A <-- B
+	// 总长度
+	// 构建逆向图进行求解
+	// 注意图性质: 每个顶点有且仅存在一条出边，因此该顶点仅可能出现在唯一的环或链条中
+	// 所有的环之间是相互独立的，不存在任何可达路径；即同一个连通分量不会存在两个或更多的环
+	adj := make([][]int, n)
+	for i := 0; i < n; i++ {
+		if favorite[favorite[i]] != i { // 二元环不需要建边
+			adj[favorite[i]] = append(adj[favorite[i]], i)
+		}
+	}
+
+	var maxPath func(x int) int
+	maxPath = func(x int) int {
+		ret := 1
+		for _, v := range adj[x] {
+			ret = maxInt(ret, maxPath(v)+1) // 保证有向无环
+		}
+		return ret
+	}
+
+	total := 0
+	for i := 0; i < n; i++ {
+		if favorite[favorite[i]] == i {
+			total += maxPath(i)
+		}
+	}
+	return maxInt(ret, total)
 }
 
-// 当前单词构成另外一个单词
+// 分析图的性质，然后分类进行讨论计算，求取最终的结果
+func main() {
+
+}
