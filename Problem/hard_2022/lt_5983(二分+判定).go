@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 )
 
 // 题目链接: https://leetcode-cn.com/problems/maximum-running-time-of-n-computers/
@@ -13,11 +12,6 @@ import (
 
 func maxRunTime(n int, batteries []int) int64 {
 	m, sum := len(batteries), 0
-	sort.Ints(batteries)
-	for i := 0; i < m; i++ {
-		sum += batteries[i]
-	}
-
 	var check = func(x int) bool {
 		left, sum := n, 0
 		for i := m - 1; i >= 0; i-- {
@@ -35,6 +29,9 @@ func maxRunTime(n int, batteries []int) int64 {
 		return false
 	}
 
+	for i := 0; i < m; i++ {
+		sum += batteries[i]
+	}
 	l, r, ret := 1, sum/n, -1
 	for l <= r {
 		mid := l + (r-l)/2
