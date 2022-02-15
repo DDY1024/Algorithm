@@ -38,7 +38,7 @@ func gridIllumination(n int, lamps, queries [][]int) []int {
 			if xx < 0 || yy < 0 || xx >= n || yy >= n || !qMark[Pair{xx, yy}] {
 				continue
 			}
-			delete(qMark, Pair{xx, yy})
+			delete(qMark, Pair{xx, yy}) // 重复的灯，一次性删除
 			// qMark[Pair{xx, yy}] = false
 			rowMark[xx]--
 			colMark[yy]--
