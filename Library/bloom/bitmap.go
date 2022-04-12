@@ -1,14 +1,12 @@
 package main
 
-// 字节 bitmap 实现
 type Bitmap struct {
 	data []byte
 	size uint64
 }
 
-// (a + b - 1) / b
 func NewBitMap(size uint64) *Bitmap {
-	size = (size + 7) / 8 * 8 // 对齐校准
+	size = (size + 7) / 8 * 8
 	bitmap := &Bitmap{
 		size: size,
 		data: make([]byte, size/8),
@@ -24,7 +22,6 @@ func NewBitMapFromData(data []byte) *Bitmap {
 	return bitmap
 }
 
-// 8: 0 ~ 7
 func (b *Bitmap) Set(pos uint64) bool {
 	if pos >= b.size {
 		return false
@@ -48,11 +45,7 @@ func (b *Bitmap) IsSet(pos uint64) bool {
 		return false
 	}
 
-	if b.data[pos>>3]&(1<<(pos&0x07)) > 0 {
-		return true
-	}
-
-	return false
+	return b.data[pos>>3]&(1<<(pos&0x07)) > 0
 }
 
 func (b *Bitmap) Resize(size uint64) {
