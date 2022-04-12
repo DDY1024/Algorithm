@@ -10,11 +10,18 @@ package main
 // 1. 最大异或和: https://leetcode-cn.com/problems/maximum-xor-of-two-numbers-in-an-array/
 
 const (
-	MaxBits = 32
+	MaxBits = 31
 )
 
 type TrieNode struct {
 	child [2]*TrieNode
+}
+
+func maxInt(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func NewTrieNode() *TrieNode {
@@ -56,7 +63,9 @@ func MaxXor(root *TrieNode, val int) int {
 		if cur.child[bit^1] != nil {
 			cur = cur.child[bit^1]
 			ret |= 1 << uint(i)
-		} else {
+			continue
+		}
+		if cur.child[bit] != nil {
 			cur = cur.child[bit]
 		}
 	}
