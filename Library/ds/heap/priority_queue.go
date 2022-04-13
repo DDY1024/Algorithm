@@ -1,11 +1,10 @@
-package Library
+package heap
 
 type Item struct {
 	val int
 	idx int
 }
 
-// 1. 大顶堆
 type MaxPQ []*Item
 
 func (pq MaxPQ) Len() int { return len(pq) }
@@ -38,10 +37,11 @@ func (pq *MaxPQ) Top() interface{} {
 	if pq.Len() == 0 {
 		return nil
 	}
-	return (*pq)[0] // 下标位置 0 即为最大或最小元素
+	return (*pq)[0]
 }
 
-// 2. 小顶堆
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 type MinPQ []*Item
 
 func (pq MinPQ) Len() int { return len(pq) }

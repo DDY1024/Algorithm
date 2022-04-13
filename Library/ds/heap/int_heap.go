@@ -1,6 +1,6 @@
-package Library
+package heap
 
-// 1. 小顶堆
+// 1. 小顶堆实现
 type MinHeap []int
 
 func (h MinHeap) Len() int           { return len(h) }
@@ -26,7 +26,7 @@ func (h *MinHeap) Top() interface{} {
 	return (*h)[0]
 }
 
-// 2. 大顶堆
+// 2. 大顶堆实现
 type MaxHeap []int
 
 func (h MaxHeap) Len() int           { return len(h) }
