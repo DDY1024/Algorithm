@@ -5,9 +5,10 @@ import (
 	"strings"
 )
 
-// 实现一种二叉树序列化/反序列化方法
-// 算法能够正确执行的原因：针对 nil 节点做了序列化处理 "null"，反序列化时我们在遇到 "null" 时及时终止递归处理，这样我们其实并不需要知道左子树、右子树划分点，我们仍然可以
-// 正确划分我们的左右子树
+// 实现一种二叉树的序列化/反序列化方法
+// 1. 针对叶子节点的孩子节点仍然进行编码 "null"
+// 2. 采用前序编码方式即可（根节点、左子树、右子树）
+
 type Node struct {
 	left  *Node
 	right *Node
@@ -28,9 +29,11 @@ func Serialization(root *Node) string {
 			result.WriteString("null")
 			return
 		}
+
 		if result.Len() > 0 {
 			result.WriteString(",")
 		}
+
 		result.WriteString(strconv.FormatInt(int64(root.val), 10))
 		encode(root.left)
 		encode(root.right)
@@ -60,3 +63,7 @@ func Deserialization(data string) *Node {
 
 	return decode()
 }
+
+// 另外一种二叉树 序列化/反序列化 的方式
+// 1. 按照二叉树（前序遍历+中序遍历）/（后序遍历+中序遍历），得到二叉树的遍历序列
+// 2. 根据 （前序遍历+中序遍历）/（后序遍历+中序遍历）结果，可以唯一的构造一棵二叉树
