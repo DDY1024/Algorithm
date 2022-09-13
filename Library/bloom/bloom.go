@@ -14,7 +14,7 @@ import (
 // 4. 计算工具: https://krisives.github.io/bloom-calculator/
 
 type BloomFilter struct {
-	m      uint64 // bit 位数量
+	m      uint64 // 位数组大小
 	k      uint64 // hash 函数个数
 	b      *Bitmap
 	locker sync.Locker
@@ -58,8 +58,7 @@ func (bf *BloomFilter) Add(val string) {
 	defer bf.locker.Unlock()
 
 	data := []byte(val)
-	// 如果选取 k 个 hash 函数？
-	// murmur3 hash + 偏移量 i
+	// murmur3 hash + 偏移量 i，构造 k 个 hash 函数
 	for i := uint64(0); i < bf.k; i++ {
 		pos := Hash(append(data, byte(i)))
 		bf.b.Set(pos % bf.m)

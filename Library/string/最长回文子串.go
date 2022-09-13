@@ -52,7 +52,7 @@ func Manacher(s string) int {
 	maxPos, maxRight, maxLen = 0, 0, 1
 	for i := 0; i < n; i++ {
 		if i < maxRight {
-			R[i] = minInt(R[2*maxPos-i], maxRight-i+1)
+			R[i] = minInt(R[2*maxPos-i], maxRight-i+1) // 递推
 		} else {
 			R[i] = 1
 		}
@@ -61,19 +61,17 @@ func Manacher(s string) int {
 		}
 		if maxRight < i+R[i]-1 {
 			maxRight = i + R[i] - 1
-			maxPos = i
+			maxPos = i // 回文半径最右端的中心点位置
 		}
 		maxLen = maxInt(maxLen, R[i])
 	}
-	return maxLen
+	return maxLen // 最长回文子串的长度为 maxLen - 1
 }
-
-// RL[i]:
-// RL[i]:
 
 // maxPos --> maxRight
 // maxPos --> i ---> maxRight
 // maxPos-(maxRight-maxPos) --> maxPos-(i-maxPos) --> maxPos --> i --> maxRight
+// maxPos - (i - maxPos)
 
 func main() {
 	s1 := "a"
@@ -90,4 +88,13 @@ func main() {
 	fmt.Println(Manacher(s6) - 1)
 	s7 := "abxbbx"
 	fmt.Println(Manacher(s7) - 1)
+
+	// mp := map[int]int{}
+	// mp[1] = 1
+	// delete(mp, 1)
+	// mp[2] = 2
+	// delete(mp, 2)
+	// for k, v := range mp {
+	// 	fmt.Println(k, v)
+	// }
 }

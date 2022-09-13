@@ -1,6 +1,6 @@
 package main
 
-const maxn = 100010
+const maxn = 100010 // 4*n+10
 
 var lchild = func(idx int) int { return idx << 1 }
 var rchild = func(idx int) int { return (idx << 1) | 1 }
@@ -22,9 +22,8 @@ func pushUp(idx int, sum []int) {
 	sum[idx] = sum[lchild(idx)] + sum[rchild(idx)]
 }
 
-// sl: 区间长度
 func pushDown(sl, idx int, add []int, sum []int) {
-	if add[idx] > 0 { // 子区间下沉操作
+	if add[idx] > 0 {
 		add[lchild(idx)] += add[idx]
 		add[rchild(idx)] += add[idx]
 		sum[lchild(idx)] += add[idx] * (sl - sl>>1) // [l,(l+r)>>1]
@@ -39,6 +38,7 @@ func query(L, R, l, r, idx int, add []int, sum []int) int {
 		return sum[idx]
 	}
 
+	// 1. push_down
 	pushDown(r-l+1, idx, add, sum)
 
 	ret, mid := 0, (l+r)>>1
@@ -50,7 +50,7 @@ func query(L, R, l, r, idx int, add []int, sum []int) int {
 		ret += query(L, R, mid+1, r, rchild(idx), add, sum)
 	}
 
-	// update 时已经做了 push_up，此处没有必要再做 push_up
+	// 2. 无
 
 	return ret
 }
@@ -59,10 +59,11 @@ func query(L, R, l, r, idx int, add []int, sum []int) int {
 func update(L, R, l, r, delta, idx int, add []int, sum []int) {
 	if L <= l && r <= R {
 		add[idx] += delta
-		sum[idx] += delta * (r - l + 1) // 此处已经算明白了
+		sum[idx] += delta * (r - l + 1)
 		return
 	}
 
+	// 1. push_down
 	pushDown(r-l+1, idx, add, sum)
 
 	mid := (l + r) >> 1
@@ -74,5 +75,6 @@ func update(L, R, l, r, delta, idx int, add []int, sum []int) {
 		update(L, R, mid+1, r, delta, rchild(idx), add, sum)
 	}
 
+	// 2. push_up
 	pushUp(idx, sum)
 }

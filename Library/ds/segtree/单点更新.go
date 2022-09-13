@@ -28,7 +28,7 @@ func buildTree(l, r, idx int, arr []int, sum []int) {
 // idx: 节点索引编号
 // 例如: query(l, r, 1, n, 1, sum)
 func query(l, r, s, t, idx int, sum []int) int {
-	if l <= s && t <= r { // 查询区间包含当前线段树节点代表的区间，则直接返回即可
+	if l <= s && t <= r { // 查询区间包含节点区间，直接返回该节点区间的统计结果
 		return sum[idx]
 	}
 
@@ -36,10 +36,10 @@ func query(l, r, s, t, idx int, sum []int) int {
 	if l <= mid {
 		ret += query(l, r, s, mid, lchild(idx), sum)
 	}
-
 	if r > mid {
 		ret += query(l, r, mid+1, t, rchild(idx), sum)
 	}
+
 	return ret
 }
 
@@ -47,7 +47,7 @@ func query(l, r, s, t, idx int, sum []int) int {
 // 位置参数: pos
 // 增量: d
 func update(pos, d, s, t, idx int, sum []int) {
-	if s == t { // 定位到具体叶子节点
+	if s == t { // 叶子节点
 		sum[idx] += d
 		return
 	}
@@ -58,7 +58,5 @@ func update(pos, d, s, t, idx int, sum []int) {
 	} else {
 		update(pos, d, mid+1, t, rchild(idx), sum)
 	}
-
-	// 需要做 push_up
 	pushUp(idx, sum)
 }

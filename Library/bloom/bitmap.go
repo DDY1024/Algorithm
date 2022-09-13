@@ -36,7 +36,7 @@ func (b *Bitmap) Unset(pos uint64) bool {
 		return false
 	}
 
-	b.data[pos>>3] &^= 1 << (pos & 0x07)
+	b.data[pos>>3] &^= 1 << (pos & 0x07) // &^ 操作，go 独有
 	return true
 }
 

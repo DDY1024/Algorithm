@@ -33,8 +33,8 @@ func Serialization(root *Node) string {
 		if result.Len() > 0 {
 			result.WriteString(",")
 		}
-
 		result.WriteString(strconv.FormatInt(int64(root.val), 10))
+
 		encode(root.left)
 		encode(root.right)
 	}

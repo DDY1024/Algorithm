@@ -34,18 +34,14 @@ func longestPalindrome(word1 string, word2 string) int {
 		for i := 0; i+l-1 < n; i++ {
 			j := i + l - 1
 			if word[i] == word[j] {
-				if i == j {
-					dp[i][j] = dp[i+1][j-1] + 1
-				} else {
-					dp[i][j] = dp[i+1][j-1] + 2
-				}
-
+				dp[i][j] = dp[i+1][j-1] + 2
 			} else {
 				dp[i][j] = maxInt(dp[i+1][j], dp[i][j-1])
 			}
 		}
 	}
 
+	// 也可以在 dp 过程中直接求解，不需要单独拎出来
 	ans := 0
 	for i := 0; i < n1; i++ {
 		for j := 0; j < n2; j++ {

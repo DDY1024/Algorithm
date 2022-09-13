@@ -33,6 +33,7 @@ return true
 // 注意事项
 // 1. redis 大 key 限制，单个 bloom 槽位上限为 10 * 1024 * 8 bit（10KB）
 // 2. 如果需要更大的 bloom filter 支持，在 1 基础上，进一步进行分片
+//
 
 // pipeline 版本的 bloom filter
 // 1. Set 操作
@@ -43,7 +44,7 @@ func (r *RedisBitSet) Set(offsets []uint) error {
 
 	for _, offset := range offsets {
 		key, thisOffset := r.getKeyOffset(offset)
-		err := pipe.SetBit(key, int64(thisOffset), 1).Err()
+		err := pipe.SetBit(key, int64(thisOffset), 1).Err()  // pipe.SetBit 设置 bit 位操作
 		if err != nil {
 			_ = pipe.Close()
 			return err
@@ -62,7 +63,7 @@ func (r *RedisBitSet) Test(offsets []uint) (bool, error) {
 
 	for _, offset := range offsets {
 		key, thisOffset := r.getKeyOffset(offset)
-		pipe.GetBit(key, int64(thisOffset))
+		pipe.GetBit(key, int64(thisOffset))  // pipe.GetBit 读取 bit 位操作
 	}
 	checks, err := pipe.Exec()
 	if err != nil {

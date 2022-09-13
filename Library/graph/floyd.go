@@ -7,13 +7,12 @@ const (
 
 var (
 	adj  [maxn][maxn]int // 邻接矩阵
-	path [maxn][maxn]int // (i,j)最短路径中j的前驱节点
-	dp   [maxn][maxn]int // (i,j)最短路径取值
+	path [maxn][maxn]int // i -> j 最短路径中j的前驱节点
+	dp   [maxn][maxn]int // i -> j 最短路径取值
 )
 
-// 顶点编号 1 ~ n
+// O(n^3)
 func solve(n int) {
-
 	for i := 1; i <= n; i++ {
 		for j := 1; j <= n; j++ {
 			dp[i][j] = adj[i][j]
@@ -35,8 +34,4 @@ func solve(n int) {
 			}
 		}
 	}
-}
-
-func main() {
-
 }

@@ -60,7 +60,7 @@ func MaxXor(root *TrieNode, val int) int {
 	cur := root
 	for i := MaxBits - 1; i >= 0; i-- {
 		bit := getBit(val, i)
-		if cur.child[bit^1] != nil {
+		if cur.child[bit^1] != nil { // 异或性质
 			cur = cur.child[bit^1]
 			ret |= 1 << uint(i)
 			continue

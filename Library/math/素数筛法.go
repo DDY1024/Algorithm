@@ -7,7 +7,7 @@ package main
 func doPrimeList(n int) {
 	isNP := make([]bool, n+1)
 	for i := 2; i*i <= n; i++ {
-		if !isNP[i] { // 素数
+		if !isNP[i] {
 			for j := i * i; j <= n; j += i {
 				isNP[j] = true
 			}
@@ -16,8 +16,7 @@ func doPrimeList(n int) {
 }
 
 // 2. 欧拉筛、线性筛
-// 复杂度 O(n)
-// 工作原理: 让每一个合数只被其最小质因数筛到
+// 工作原理: 每一个合数只被其 "最小的质因数" 筛到
 func doLinearPrimeList(n int) {
 	isNP := make([]bool, n+1)
 	primes := make([]int, 0, n/2)

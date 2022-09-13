@@ -1,11 +1,11 @@
 package main
 
-import "fmt"
-
-// 原文出自: http://www.matrix67.com/blog/archives/266
+// 参考资料
+// http://www.matrix67.com/blog/archives/266
 // https://www.cxyxiaowu.com/8990.html
 
 var leftShift = func(x int) int { return 1 << uint(x) }
+var ls = func(x int) int { return 1 << uint(x) }
 
 func NQueen(n int) int {
 	mask := (1 << n) - 1
@@ -31,9 +31,14 @@ func NQueen(n int) int {
 		// 	}
 		// }
 
-		// 方法二
+		// 方法二: 直接遍历所有可以放置的位置
 		for ch > 0 {
-			pos := ch & (-ch)
+			pos := ch & (-ch) // x&(-x) 获取 x 最低位的 1 表示的数
+			// 经典表示:
+			// mask: 1<<uint(n) - 1
+			// 列: col|pos
+			// 主对角线: (rd|pos)>>1
+			// 副对角线: (ld|pos)<<1
 			dfs(row+1, col|pos, (ld|pos)<<1, (rd|pos)>>1)
 			ch &= ch - 1
 		}
@@ -41,8 +46,4 @@ func NQueen(n int) int {
 
 	dfs(0, 0, 0, 0)
 	return total
-}
-
-func main() {
-	fmt.Println(NQueen(8))
 }

@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
-// TODO: 今天复习下 rmq 算法，找资料将这块模板补齐
-// 换一种角度考虑，其实其应该理解成 ”倍增 DP“
-// 区间范围最值，实际上如果两个区间满足加法性质，均可以采用 rmq 思想来求解
-// O(nlogn)
+// 1. 区间倍增 DP
+// 2. 静态查询，一次性预处理，不允许动态修改
+// 3. 区间满足 "加法" 性质，均可以采用 rmq 方法来处理
+// 4. 预处理时间复杂度 O(N * logN)
 
 var ls = func(x int) int { return 1 << uint(x) }
 
@@ -27,7 +26,8 @@ func minInt(a, b int) int {
 }
 
 func calcExp(n int) int {
-	return int(math.Floor(math.Log2(float64(n))))
+	// 此处如果为了确保精度，可以直接循环计算出最大的 exp，满足 2^exp <= n
+	return int(math.Floor(math.Log2(float64(n)))) // math.Floor
 }
 
 func getMax(l, r int, dp [][]int) int {
@@ -40,6 +40,8 @@ func getMin(l, r int, dp [][]int) int {
 	return minInt(dp[l][exp], dp[r-ls(exp)+1][exp])
 }
 
+// dp[i][j] 表示以 i 开始区间长度为 1<<j 的最值
+// dp[i][j] = OP{ dp[i][j-1], dp[i+ls(j-1)][j-1] }，其中 OP 表示任何区间可叠加类的操作
 func rmqInit(n int, arr []int) [][]int {
 	exp := calcExp(n)
 	dp := make([][]int, n)
@@ -55,16 +57,4 @@ func rmqInit(n int, arr []int) [][]int {
 		}
 	}
 	return dp
-}
-
-func main() {
-	arr := []int{1, 2, 3, 4}
-	dp := rmqInit(4, arr)
-	fmt.Println(getMax(0, 3, dp))
-	fmt.Println(getMax(1, 2, dp))
-	fmt.Println(getMax(2, 2, dp))
-	fmt.Println(getMax(0, 1, dp))
-	fmt.Println(getMax(0, 0, dp))
-	//fmt.Println(math.Floor(math.Log2(4.00,000001)))
-	//fmt.Println(math.Floor(math.Log2(3.0)))
 }

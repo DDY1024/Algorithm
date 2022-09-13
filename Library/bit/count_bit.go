@@ -26,5 +26,3 @@ func countBitTwo(n uint32) uint32 {
 	n = (n & 0x0000ffff) + ((n >> 16) & 0x0000ffff)
 	return n
 }
-
-// 同理求解 uint64

@@ -6,7 +6,13 @@ import (
 
 // https://leetcode-cn.com/contest/weekly-contest-236/problems/minimum-sideway-jumps/
 // 利用 priority_queue + 搜索求解最短路径（尤其在顶点比较多，边比较少的稀疏图中会有奇效）
-// 参考这一题目的做法
+
+func minInt(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
 
 type Item struct {
 	x int
@@ -46,7 +52,7 @@ func (pq *MinPQ) Top() interface{} {
 	return (*pq)[0]
 }
 
-func minSideJumps(obstacles []int) int {
+func minSideJumpsOne(obstacles []int) int {
 	n := len(obstacles)
 	dis := make([][]int, n)
 	for i := 0; i < n; i++ {
@@ -55,6 +61,7 @@ func minSideJumps(obstacles []int) int {
 			dis[i][j] = 0x3f3f3f3f
 		}
 	}
+
 	dis[0][2] = 0
 	pq := make(MinPQ, 0, n*3+10)
 	heap.Push(&pq, &Item{0, 2, 0})
@@ -63,10 +70,12 @@ func minSideJumps(obstacles []int) int {
 		if nd.x == n-1 {
 			return nd.d
 		}
+
 		if nd.x+1 < n && obstacles[nd.x+1] != nd.y && dis[nd.x+1][nd.y] > nd.d {
 			heap.Push(&pq, &Item{nd.x + 1, nd.y, nd.d})
 			dis[nd.x+1][nd.y] = nd.d
 		}
+
 		for yy := 1; yy <= 3; yy++ {
 			if yy != nd.y && obstacles[nd.x] != yy && dis[nd.x][yy] > nd.d+1 {
 				heap.Push(&pq, &Item{nd.x, yy, nd.d + 1})
@@ -77,15 +86,7 @@ func minSideJumps(obstacles []int) int {
 	return -1
 }
 
-// 这道题目阶段划分是十分明显的，显然可以直接用 dp 来求解
-// 按阶段进行划分
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
+// 划分阶段，dp 进行求解
 func minSideJumps(obstacles []int) int {
 	n := len(obstacles)
 	dp := make([][]int, n)

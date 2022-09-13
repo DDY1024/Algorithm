@@ -6,6 +6,8 @@ import (
 	rbt "github.com/emirpasic/gods/trees/redblacktree"
 )
 
+// gods: leetcode 标准库
+
 func main() {
 	tree := rbt.NewWithIntComparator() // empty (keys are of type int)
 	// rbt.NewWithStringComparator()

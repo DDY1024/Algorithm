@@ -25,12 +25,16 @@ func cmp(a, b Point) bool {
 	return x1 < x2
 }
 
+// 小 --> 大
+// 第三象限、第四象限、第一象限、第二象限
+
 func main() {
 	var plist []Point
 	plist = append(plist, Point{10, 0})
 	plist = append(plist, Point{0, 10})
 	plist = append(plist, Point{-10, 0})
 	plist = append(plist, Point{0, -10})
+	plist = append(plist, Point{-10, -0.1})
 	sort.Slice(plist, func(i, j int) bool {
 		return cmp(plist[i], plist[j])
 	})

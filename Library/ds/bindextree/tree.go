@@ -10,8 +10,8 @@ import (
 // https://zhuanlan.zhihu.com/p/93795692
 //
 // 1. 改点求段
-// 2. 改段求点
-// 3. 改段求段
+// 2. 改段求点(差分数组)
+// 3. 改段求段(还是线段树吧)
 
 func lowBit(x int) int {
 	return x & (-x)

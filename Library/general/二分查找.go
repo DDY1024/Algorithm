@@ -1,5 +1,7 @@
 package main
 
+import "sort"
+
 // 二分查找值为 target 元素
 func binarySearchMatrix(nums []int, target int) int {
 	low, high := 0, len(nums)-1
@@ -86,4 +88,26 @@ func searchLastLessElement(nums []int, target int) int {
 		}
 	}
 	return -1
+}
+
+func main() {
+	var nums []int
+	var target int
+
+	// binarySearchMatrix
+	// searchFirstEqualElement
+	// searchFirstGreaterElement
+	sort.Search(len(nums), func(idx int) bool {
+		return nums[idx] >= target
+	})
+
+	// searchLastEqualElement
+	// searchLastLessElement
+	// idx :=
+	sort.Search(len(nums), func(idx int) bool {
+		return nums[idx] > target
+	})
+	//nums[idx-1]
+
+	// sort.Search() 标准库函数是基本可以满足我们所有场景下二分查找的需求
 }

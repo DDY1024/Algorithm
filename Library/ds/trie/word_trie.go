@@ -1,9 +1,7 @@
 package main
 
 // 常规字典树介绍参考: https://segmentfault.com/a/1190000040801084
-//
-//
-//
+
 type Node struct {
 	child [26]*Node
 	val   string // 可以为任意类型 interface{}

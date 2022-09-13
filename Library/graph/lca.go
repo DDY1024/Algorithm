@@ -53,7 +53,7 @@ var dfn int
 
 func dfsOne(u, p int) {
 	dfn++
-	inN[u] = dfn  // 进入点
+	inN[u] = dfn // 进入点
 	vn[dfn] = u
 	for i := head[u]; i != -1; i = edges[i].next {
 		v := edges[i].v
@@ -63,7 +63,7 @@ func dfsOne(u, p int) {
 		dfsOne(v, u)
 	}
 	dfn++
-	outN[u] = dfn  // 出去点
+	outN[u] = dfn // 出去点
 	vn[dfn] = u
 	return
 }
@@ -72,11 +72,11 @@ func dfsOne(u, p int) {
 // 1. 子树权值和: 从欧拉序记录的方法不难看出，所有子树节点均存在于 first[u] --> last[u] 之间，不重复计算节点权值和即可
 // 2. LCA 求解: first[u] ... fist[v] 区间之间深度最小的顶点即为最近公共祖先
 // 欧拉序列最终会输出 2*n - 1 个顶点
-var first []int	// 记录该顶点在欧拉序中第一次出现的位置
-var rmq []int // 记录每个顶点的深度
+var first []int // 记录该顶点在欧拉序中第一次出现的位置
+var rmq []int   // 记录每个顶点的深度
 func dfsTwo(u, p, depth int) {
 	dfn++
-	vn[dfn] = u	// 进入点
+	vn[dfn] = u // 进入点
 	rmq[dfn] = depth
 	first[u] = dfn
 	for i := head[u]; i != -1; i = edges[i].next {
@@ -86,12 +86,11 @@ func dfsTwo(u, p, depth int) {
 		}
 		dfsTwo(v, u, depth+1)
 		dfn++
-		vn[dfn] = u  // 回溯点
+		vn[dfn] = u // 回溯点
 		rmq[dfn] = depth
 	}
 	return
 }
-
 
 // 1. 欧拉序 + rmq 在线求解 lca
 var dp [][]int
@@ -105,7 +104,7 @@ func initRMQ() {
 		dp[i][0] = i
 	}
 	for l := 1; 1<<uint(l) < 2*n; l++ {
-		for i := 1; i + (1<<uint(l)) < 2*n; i++ {
+		for i := 1; i+(1<<uint(l)) < 2*n; i++ {
 			id1 := dp[i][l-1]
 			id2 := dp[i+(1<<uint(l-1))][l-1]
 			if rmq[id1] <= rmq[id2] {
@@ -134,7 +133,7 @@ func maxInt(a, b int) int {
 func queryRMQ(u, v int) int {
 	l := minInt(first[u], first[v])
 	r := maxInt(first[u], first[v])
-	st := int(math.Log2(float64(r-l+1)))
+	st := int(math.Log2(float64(r - l + 1)))
 	// fmt.Println(l, r, st)
 	id1 := dp[l][st]
 	id2 := dp[r-(1<<uint(st))+1][st]
@@ -144,7 +143,6 @@ func queryRMQ(u, v int) int {
 	}
 	return vn[id2]
 }
-
 
 // 2. tarjan 算法求解 lca
 /*
@@ -187,13 +185,13 @@ func find(u int) int {
 // 此处的 merge 顺序也是很重要的
 func merge(u, v int) {
 	r1, r2 := find(u), find(v)
-	if r1 != r2 {  // 注意 merge 的方向
+	if r1 != r2 { // 注意 merge 的方向
 		parent[r1] = r2
 	}
 }
 
 type Query struct {
-	v, idx int   // 存储查询结果
+	v, idx int // 存储查询结果
 }
 
 var vis []bool
@@ -214,13 +212,13 @@ func TarjanLCA(u int) {
 	}
 	for i := range query[u] {
 		v := query[u][i].v
-		if vis[v] {  // 顶点被访问过
+		if vis[v] { // 顶点被访问过
 			fmt.Println("LCA: ", u, v, ances[find(v)])
 		}
 	}
 }
 
-var fa [][]int  // fa[i][j] 节点 i 的第 2^j 个祖先节点
+var fa [][]int   // fa[i][j] 节点 i 的第 2^j 个祖先节点
 var vdepth []int // 节点 i 的深度
 
 func BFS(root, n int) {
@@ -246,7 +244,7 @@ func BFS(root, n int) {
 			if vis[v] {
 				continue
 			}
-			vis[v] = true  // 此处其实可以直接用父节点做判断
+			vis[v] = true // 此处其实可以直接用父节点做判断
 			vdepth[v] = vdepth[u] + 1
 			fa[v][0] = u
 			que = append(que, v)
@@ -270,7 +268,7 @@ func BLCA(u, v int) int {
 		return u
 	}
 	// fa[u][i] 到顶了，则 fa[u][i+1] 也是到顶的
-	for i := 9; i >= 0; i-- {  // 此处求解的方法比较巧妙
+	for i := 9; i >= 0; i-- { // 此处求解的方法比较巧妙
 		if fa[u][i] == fa[v][i] {
 			continue
 		}
@@ -278,7 +276,6 @@ func BLCA(u, v int) int {
 	}
 	return fa[u][0]
 }
-
 
 func main() {
 	n, m = 8, 20
@@ -326,7 +323,7 @@ func main() {
 	query[6] = append(query[6], Query{7, -1})
 	query[0] = append(query[0], Query{7, -1})
 	query[3] = append(query[3], Query{7, -1})
-	TarjanLCA(0)  // tarjan 算法求 lca 只需要过一遍即可，还是很高效的
+	TarjanLCA(0) // tarjan 算法求 lca 只需要过一遍即可，还是很高效的
 
 	// 倍增法求解 lca
 	BFS(0, 8)
@@ -343,4 +340,3 @@ func main() {
 	_ = json.Unmarshal(ssx, &yy)
 	fmt.Println(yy)
 }
-
