@@ -1,12 +1,18 @@
 package main
 
-import "sort"
+import (
+	"sort"
+)
 
 // 熟悉扫描线算法思想解题思路
 // 扫描线算法求解参考：https://leetcode-cn.com/problems/perfect-rectangle/solution/gong-shui-san-xie-chang-gui-sao-miao-xia-p4q4/
 // y1: 下端点
 // y2: 上端点
 // d: 属于矩形左边的竖边还是右边的竖边, -1: 左边 1: 右边
+
+// 精确覆盖的充要条件：对于完美矩形的每一条非边缘的竖边，都「成对」出现（存在两条完全相同的左边和右边重叠在一起）；
+// 对于完美矩形的两条边缘竖边，均独立为一条连续的（不重叠）的竖边
+
 type Edge struct {
 	y1, y2 int
 }
@@ -112,6 +118,64 @@ func isRectangleCover(rectangles [][]int) bool {
 			}
 		}
 		if i < len(arr1) || j < len(arr2) {
+			return false
+		}
+	}
+	return true
+}
+
+// 同样该题目是一道规律结论题
+// 要实现精确覆盖某一矩形（子矩形不相交），需要满足的条件
+// 		1. 所有子矩形的面积 = 整个大矩形的面积
+//      2. 除了大矩形的四个端点仅出现 1 次外，其余端点只能出现 2 次或 4 次
+
+func isRectangleCover2(rectangles [][]int) bool {
+	var minInt = func(a, b int) int {
+		if a < b {
+			return a
+		}
+		return b
+	}
+
+	var maxInt = func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
+	}
+
+	type Point struct {
+		x int
+		y int
+	}
+
+	n := len(rectangles)
+	stats := make(map[Point]int, n)
+	minX, maxX, minY, maxY, area := rectangles[0][0], rectangles[0][0], rectangles[0][1], rectangles[0][1], 0
+	for i := 0; i < n; i++ {
+		minX = minInt(minX, rectangles[i][0])
+		maxX = maxInt(maxX, rectangles[i][2])
+		minY = minInt(minY, rectangles[i][1])
+		maxY = maxInt(maxY, rectangles[i][3])
+		area += (rectangles[i][3] - rectangles[i][1]) * (rectangles[i][2] - rectangles[i][0])
+		stats[Point{rectangles[i][0], rectangles[i][1]}]++
+		stats[Point{rectangles[i][0], rectangles[i][3]}]++
+		stats[Point{rectangles[i][2], rectangles[i][1]}]++
+		stats[Point{rectangles[i][2], rectangles[i][3]}]++
+	}
+
+	if area != (maxY-minY)*(maxX-minX) || stats[Point{minX, minY}] != 1 || stats[Point{minX, maxY}] != 1 ||
+		stats[Point{maxX, minY}] != 1 || stats[Point{maxX, maxY}] != 1 {
+		return false
+	}
+
+	delete(stats, Point{minX, minY})
+	delete(stats, Point{minX, maxY})
+	delete(stats, Point{maxX, minY})
+	delete(stats, Point{maxX, maxY})
+
+	for _, v := range stats {
+		if v != 2 && v != 4 {
 			return false
 		}
 	}

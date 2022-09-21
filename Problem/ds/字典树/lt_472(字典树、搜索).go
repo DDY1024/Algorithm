@@ -2,6 +2,7 @@ package main
 
 import "sort"
 
+// 字典树上进行搜索
 // 解题思路: https://leetcode-cn.com/problems/concatenated-words/
 
 type Node struct {

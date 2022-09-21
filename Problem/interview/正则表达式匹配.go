@@ -1,6 +1,6 @@
 package main
 
-// 经典动态规划问题
+// 经典动态规划问题: 
 
 func isMatch(s string, p string) bool {
 	n, m := len(s), len(p)
