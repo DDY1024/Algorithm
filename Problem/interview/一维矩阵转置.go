@@ -5,9 +5,13 @@ import (
 	"time"
 )
 
-// 旋转数组: O(1) 空间复杂度原地旋转
-// 利用矩阵的置换运算
-// (A^t,B^t)^t = B^t^t,A^t^t=BA
+// 旋转数组: O(1) 空间复杂度 --> 原地旋转
+//
+//
+// 利用矩阵转置操作
+// (A^T, B^T) ^ T = B^T^T, A^T^T = B,A
+//
+//
 
 func rotate(nums []int, k int) {
 	n := len(nums)
@@ -48,9 +52,6 @@ func (this *Solution) Reset() []int {
 }
 
 func (this *Solution) Shuffle() []int {
-	// rand.Shuffle(this.size, func(i, j int) {
-	// 	this.data[i], this.data[j] = this.data[j], this.data[i]
-	// })
 	for i := this.size - 1; i > 0; i-- {
 		j := rand.Intn(i + 1)
 		this.data[i], this.data[j] = this.data[j], this.data[i]

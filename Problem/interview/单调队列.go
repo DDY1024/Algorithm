@@ -12,12 +12,16 @@ func maxSlidingWindow(nums []int, k int) []int {
 			q = q[:len(q)-1]
 		}
 		q = append(q, i)
+
+		// 维护大小为 k 的窗口
 		for len(q) > 0 && q[0] < i-k+1 {
 			q = q[1:]
 		}
+
 		if i >= k-1 {
-			ret = append(ret, nums[q[0]])
+			ret = append(ret, nums[q[0]]) // 队首存储窗口内最大的元素
 		}
 	}
+
 	return ret
 }

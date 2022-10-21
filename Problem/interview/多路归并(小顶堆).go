@@ -1,6 +1,8 @@
 package main
 
-// 优化: 小顶堆维护，进一步降低时间复杂度
+// 小顶堆维护第 i 个数据块中的第 j 个元素
+// 每次总是选择最小的元素，然后进行递增
+
 func kthSmallest(matrix [][]int, k int) int {
 	n, cc := len(matrix), 0
 	pos, midx := make([]int, n), -1

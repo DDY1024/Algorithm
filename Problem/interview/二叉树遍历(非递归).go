@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type TreeNode struct {
 	val   int
 	left  *TreeNode
@@ -22,19 +20,16 @@ func preOrder(root *TreeNode) {
 		nd := stk[len(stk)-1]
 		result = append(result, nd.val)
 
-		// 先入右子树
+		// 1. 先入右子树
 		if nd.right != nil {
 			stk = append(stk, nd.right)
 		}
 
-		// 再入左子树（出栈顺序正好相反）
+		// 2. 再入左子树
 		if nd.left != nil {
 			stk = append(stk, nd.left)
 		}
 	}
-
-	fmt.Println(result)
-	return
 }
 
 // 中序非递归遍历：左子树、根节点、右子树
@@ -45,6 +40,7 @@ func inOrder(root *TreeNode) {
 
 	stk := make([]*TreeNode, 0)
 	result := make([]int, 0)
+
 	cur := root
 	for cur != nil || len(stk) > 0 {
 		for cur != nil {
@@ -57,7 +53,4 @@ func inOrder(root *TreeNode) {
 		result = append(result, cur.val)
 		cur = cur.right
 	}
-
-	fmt.Println(result)
-	return
 }

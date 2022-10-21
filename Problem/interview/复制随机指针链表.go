@@ -7,10 +7,12 @@ type Node struct {
 }
 
 func copyRandomList(head *Node) *Node {
+
 	if head == nil {
 		return nil
 	}
 
+	// 1. 复制链表节点
 	cur := head
 	for cur != nil {
 		nd := &Node{Val: cur.Val}
@@ -19,6 +21,7 @@ func copyRandomList(head *Node) *Node {
 		cur = cur.Next.Next
 	}
 
+	// 2. 赋值随机指针
 	cur = head
 	for cur != nil {
 		if cur.Random != nil {
@@ -27,8 +30,12 @@ func copyRandomList(head *Node) *Node {
 		cur = cur.Next.Next
 	}
 
-	var newHead *Node
-	var newTail *Node
+	var (
+		newHead *Node
+		newTail *Node
+	)
+
+	// 3. 拆分链表节点
 	cur = head
 	for cur != nil {
 		if newHead == nil {
@@ -40,5 +47,6 @@ func copyRandomList(head *Node) *Node {
 		cur.Next = newTail.Next
 		cur = cur.Next
 	}
+
 	return newHead
 }

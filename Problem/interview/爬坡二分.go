@@ -6,6 +6,9 @@ package main
 // 	   最终的解题思路恰好对应到二分查找上，可以实现在 O(logN) 复杂度内解决该问题
 // https://leetcode.cn/problems/find-peak-element/solution/xun-zhao-feng-zhi-by-leetcode-solution-96sj/
 
+//
+// 寻找峰值元素
+
 func findPeakElement(nums []int) int {
 
 	n := len(nums)

@@ -1,6 +1,8 @@
 package main
 
 // https://leetcode.cn/problems/edit-distance/?favorite=2cktkvj
+//
+// 编辑距离：经典动态规划问题
 
 func maxInt(a, b int) int {
 	if a > b {
@@ -38,6 +40,7 @@ func minDistance(word1 string, word2 string) int {
 			if word1[i-1] == word2[j-1] {
 				dp[i][j] = dp[i-1][j-1]
 			} else {
+				// 删除、替换、插入三种操作
 				dp[i][j] = minInt(dp[i-1][j], minInt(dp[i-1][j-1], dp[i][j-1])) + 1
 			}
 		}

@@ -1,9 +1,6 @@
 package main
 
-// 官方题解参考
-// https://leetcode.cn/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode-solution/
-
-// 利用栈进行统计（个人思路）
+// 解题报告: https://leetcode.cn/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode-solution/
 
 func maxInt(a, b int) int {
 	if a > b {
@@ -57,8 +54,7 @@ func longestValidParentheses(s string) int {
 	return ret
 }
 
-// dp 求解思路：https://leetcode.cn/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode-solution/
-//
+// 解题思路：https://leetcode.cn/problems/longest-valid-parentheses/solution/zui-chang-you-xiao-gua-hao-by-leetcode-solution/
 // dp[i]: 表示以 i 结尾的最长有效括号的长度
 
 func longestValidParenthesesDP(s string) int {
@@ -68,12 +64,15 @@ func longestValidParenthesesDP(s string) int {
 	}
 
 	dp := make([]int, n)
+
 	ret := 0
+	// 思考：括号匹配情况下，如何进行有效的状态转移？
 	for i := 1; i < n; i++ {
 		if s[i] == '(' {
 			continue
 		}
 
+		// s[i-1] = '(' && s[i] = ')'
 		if s[i-1] == '(' {
 			dp[i] = 2
 			if i-2 >= 0 {
@@ -83,6 +82,7 @@ func longestValidParenthesesDP(s string) int {
 			continue
 		}
 
+		// s[i] = ')' && s[i-1] = ')'
 		if i-dp[i-1]-1 >= 0 && s[i-dp[i-1]-1] == '(' {
 			dp[i] = dp[i-1] + 2
 			if i-dp[i-1]-2 >= 0 {
@@ -91,5 +91,6 @@ func longestValidParenthesesDP(s string) int {
 			ret = maxInt(ret, dp[i])
 		}
 	}
+
 	return ret
 }

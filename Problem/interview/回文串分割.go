@@ -1,18 +1,6 @@
 package main
 
 func partition(s string) [][]string {
-
-	// 回文串的判断，可以通过动态规划进行预处理
-	// var isPalindrome = func(s string) bool {
-	// 	n := len(s)
-	// 	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
-	// 		if s[i] != s[j] {
-	// 			return false
-	// 		}
-	// 	}
-	// 	return true
-	// }
-
 	n := len(s)
 	isP := make([][]bool, n)
 	for i := 0; i < n; i++ {
@@ -30,8 +18,6 @@ func partition(s string) [][]string {
 					isP[i][j] = isP[i+1][j-1]
 				}
 			}
-
-			// default false
 		}
 	}
 
@@ -49,7 +35,6 @@ func partition(s string) [][]string {
 			return
 		}
 		for i := pos; i < n; i++ {
-			//if isPalindrome(s[pos : i+1]) {
 			if isP[pos][i] {
 				tmp[num] = s[pos : i+1]
 				dfs(i+1, num+1)
@@ -57,5 +42,6 @@ func partition(s string) [][]string {
 		}
 	}
 	dfs(0, 0)
+
 	return ret
 }

@@ -2,8 +2,6 @@ package main
 
 import "container/list"
 
-// 实现一个简单的 lru 缓存
-
 type Item struct {
 	key int
 	val int
@@ -11,15 +9,15 @@ type Item struct {
 
 type LRUCache struct {
 	visit *list.List
-	index map[int]*list.Element // 直接利用 golang 标准库来实现双向链表
+	index map[int]*list.Element
 	cap   int
 	size  int
 }
 
-func Constructor(capacity int) LRUCache {
+func NewLRUCache(capacity int) LRUCache {
 	return LRUCache{
 		visit: list.New(),
-		index: make(map[int]*list.Element, 100000),
+		index: make(map[int]*list.Element, capacity),
 		cap:   capacity,
 		size:  0,
 	}
@@ -55,7 +53,7 @@ func (this *LRUCache) Put(key int, value int) {
 	this.index[key] = e
 	this.size++
 
-	if this.size > this.cap { // lru 驱逐策略
+	if this.size > this.cap { // evict 元素驱逐
 		this.size--
 		item = this.visit.Back().Value.(*Item)
 		delete(this.index, item.key)

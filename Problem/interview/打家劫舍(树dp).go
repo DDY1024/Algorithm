@@ -2,10 +2,10 @@ package main
 
 // https://leetcode.cn/problems/house-robber-iii/
 //
-// 一道二叉树上的动态规划题目
-//     记忆化搜索
-//     单数组全局存储状态结果值
-//     多数组分开存储状态结果值
+//
+// 二叉树上的动态规划
+//
+//
 
 type TreeNode struct {
 	Val   int
@@ -13,16 +13,16 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func rob(root *TreeNode) int {
 	if root == nil {
 		return 0
+	}
+
+	var maxInt = func(a, b int) int {
+		if a > b {
+			return a
+		}
+		return b
 	}
 
 	f := make(map[*TreeNode]int, 0) // 该节点被选中

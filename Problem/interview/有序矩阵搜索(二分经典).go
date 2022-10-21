@@ -20,6 +20,7 @@ func kthSmallest(matrix [][]int, k int) int {
 			col++
 		}
 
+		// 随着 row 增大，最终定位的 col 必然是单调不增的（存在单调性），O(n) 复杂度便可以求解
 		for row < n {
 			for col-1 >= 0 && matrix[row][col-1] > x {
 				col--
@@ -30,6 +31,8 @@ func kthSmallest(matrix [][]int, k int) int {
 		return cc
 	}
 
+	// 二分枚举答案 + 判定: 由于行、列存在单调性，因此完全可以在 O(n) 复杂度内找出 <= x 元素个数
+	// 最终复杂度为 O(m * logn)
 	l, r, ret := matrix[0][0], matrix[n-1][n-1], -1
 	for l <= r {
 		mid := l + (r-l)/2
@@ -40,5 +43,6 @@ func kthSmallest(matrix [][]int, k int) int {
 			l = mid + 1
 		}
 	}
+
 	return ret
 }

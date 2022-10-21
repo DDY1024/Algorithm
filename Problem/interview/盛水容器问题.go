@@ -60,7 +60,6 @@ func maxArea(height []int) int {
 
 // 双指针解法
 // https://leetcode.cn/problems/container-with-most-water/solution/sheng-zui-duo-shui-de-rong-qi-by-leetcode-solution/
-
 // 首先初始区间为 [0, n-1]，取两者中的较小者进行移动，在这个过程不断更新最大值
 
 func maxInt(a, b int) int {

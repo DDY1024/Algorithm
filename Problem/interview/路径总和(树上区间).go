@@ -36,15 +36,15 @@ func pathSum(root *TreeNode, targetSum int) int {
 			return 0
 		}
 
-		curSum := sum + cur.Val // cur.Val not root.Val
-		ret := prefixSum[curSum-targetSum]
+		curSum := sum + cur.Val
+		ret := prefixSum[curSum-targetSum] // 统计相应前缀和路径数
 
 		prefixSum[curSum]++
 		ret += dfs(cur.Left, curSum)  // 左子树
 		ret += dfs(cur.Right, curSum) // 右子树
 		prefixSum[curSum]--           // 只会包含当前节点到根节点路径上的所有祖先节点
-
 		return ret
 	}
+
 	return dfs(root, 0)
 }

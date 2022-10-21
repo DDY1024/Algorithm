@@ -39,6 +39,3 @@ func rotate2(matrix [][]int) {
 		}
 	}
 }
-
-
-

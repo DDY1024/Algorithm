@@ -13,12 +13,6 @@ func NewTrieNode() *TrieNode {
 	return &TrieNode{}
 }
 
-// func Constructor() Trie {
-// 	return Trie{
-// 		root: NewTrieNode(),
-// 	}
-// }
-
 func NewTrie() *Trie {
 	return &Trie{
 		root: NewTrieNode(),
@@ -48,7 +42,7 @@ func (this *Trie) Search(word string) bool {
 		}
 		cur = cur.child[cidx]
 	}
-	return cur.isLeaf
+	return cur.isLeaf // 整个单词
 }
 
 func (this *Trie) StartsWith(prefix string) bool {
@@ -61,7 +55,5 @@ func (this *Trie) StartsWith(prefix string) bool {
 		}
 		cur = cur.child[cidx]
 	}
-	return true
+	return true // 前缀
 }
-
-// Search 和 StartsWith 可以共同抽出一个方法来做

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -21,7 +20,6 @@ func removeInvalidParentheses(s string) []string {
 	dfs = func(pos, lbc, rbc, rc int) {
 		if pos >= n {
 			if lbc == rbc {
-				fmt.Println("TT:", string(bs))
 				if rc < rrc {
 					rrc = rc
 					ans = make([]string, 0)
@@ -72,7 +70,7 @@ func removeInvalidParentheses(s string) []string {
 
 	dfs(0, 0, 0, 0)
 
-	// 去重, 目前只能自己手写去重逻辑
+	// 去重
 	sort.Strings(ans)
 	i, j := 0, 0
 	for j < len(ans) {

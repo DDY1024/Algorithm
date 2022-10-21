@@ -2,7 +2,8 @@ package main
 
 import "container/heap"
 
-// container/heap
+// 最大 K 个元素: 小顶堆
+// 最小 K 个元素：大顶堆
 
 type MinHeap []int
 

@@ -1,12 +1,13 @@
 package main
 
+// 题目链接（中等）：https://leetcode.cn/problems/word-search/
+// 题目链接（困难）：https://leetcode.cn/problems/word-search-ii/
+
 // 1. 解法一: 纯暴力搜索
 func findWords(board [][]byte, words []string) []string {
 	m, n := len(board), len(board[0])
 	dx := []int{-1, 1, 0, 0}
 	dy := []int{0, 0, -1, 1}
-	maxLen := 0
-
 	dict := make(map[string]bool, 0)
 
 	vis := make([][]bool, m)
@@ -21,6 +22,7 @@ func findWords(board [][]byte, words []string) []string {
 		return b
 	}
 
+	maxLen := 0
 	for i := 0; i < len(words); i++ {
 		maxLen = maxInt(maxLen, len(words[i]))
 	}
@@ -46,6 +48,7 @@ func findWords(board [][]byte, words []string) []string {
 		}
 	}
 
+	// 暴力寻找出所有可能的组合方案，并判断每个单词是否存在？
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
 			vis[i][j] = true
@@ -64,8 +67,7 @@ func findWords(board [][]byte, words []string) []string {
 	return ret
 }
 
-// 2. 借助字典树辅助优化搜索（剪枝）
-
+// 2. 利用字典树辅助优化搜索
 type TrieNode struct {
 	child  [26]*TrieNode
 	isLeaf bool
@@ -79,12 +81,6 @@ type Trie struct {
 func NewTrieNode() *TrieNode {
 	return &TrieNode{}
 }
-
-// func Constructor() Trie {
-// 	return Trie{
-// 		root: NewTrieNode(),
-// 	}
-// }
 
 func NewTrie() *Trie {
 	return &Trie{
@@ -127,6 +123,7 @@ func findWords2(board [][]byte, words []string) []string {
 
 	m, n := len(board), len(board[0])
 	dx, dy := []int{-1, 1, 0, 0}, []int{0, 0, -1, 1}
+
 	vis := make([][]bool, m)
 	for i := 0; i < m; i++ {
 		vis[i] = make([]bool, n)
@@ -136,12 +133,10 @@ func findWords2(board [][]byte, words []string) []string {
 
 	var search func(x, y int, cur *TrieNode)
 	search = func(x, y int, cur *TrieNode) {
-		if cur == nil {
-			return
-		}
 		if cur.isLeaf {
 			occur[cur.word] = true
 		}
+
 		for i := 0; i < 4; i++ {
 			xx, yy := x+dx[i], y+dy[i]
 			if xx >= 0 && xx < m && yy >= 0 && yy < n && !vis[xx][yy] && cur.child[int(board[xx][yy]-'a')] != nil {

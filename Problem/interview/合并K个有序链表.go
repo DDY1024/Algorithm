@@ -12,8 +12,6 @@ import (
  * }
  */
 
-// 利用小顶堆进行优化
-
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -71,13 +69,14 @@ func mergeKLists(lists []*ListNode) *ListNode {
 
 	for pq.Len() > 0 {
 		item := pq.Top().(*Item)
+		heap.Pop(&pq)
+
 		if head == nil {
 			head, tail = item.node, item.node
 		} else {
 			tail.Next = item.node
 			tail = tail.Next
 		}
-		heap.Pop(&pq)
 
 		if item.node.Next != nil {
 			heap.Push(&pq, &Item{

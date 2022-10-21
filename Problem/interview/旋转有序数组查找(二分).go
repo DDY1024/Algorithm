@@ -1,10 +1,12 @@
 package main
 
-// 官方题解：https://leetcode.cn/problems/search-in-rotated-sorted-array/
+// 题目链接：
+// 解题报告：https://leetcode.cn/problems/search-in-rotated-sorted-array/
 
 func search(nums []int, target int) int {
 	n := len(nums)
 	l, r := 0, n-1
+
 	for l <= r {
 		mid := l + (r-l)/2
 		if nums[mid] == target {
@@ -27,5 +29,6 @@ func search(nums []int, target int) int {
 			}
 		}
 	}
+
 	return -1
 }

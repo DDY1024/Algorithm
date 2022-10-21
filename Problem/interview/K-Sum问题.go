@@ -2,9 +2,9 @@ package main
 
 import "sort"
 
-// 题意：寻找所有三个数之和为 0且不重复的整数对
+// 题意：寻找所有三个数之和为 0 且不重复的整数对
 //
-// 双指针解法 --> k-sum 问题
+// K-Sum 问题及其演变
 
 func threeSum(nums []int) [][]int {
 	n := len(nums)
@@ -37,5 +37,6 @@ func threeSum(nums []int) [][]int {
 			}
 		}
 	}
+
 	return ans
 }

@@ -28,6 +28,10 @@ func (this *MedianFinder) AddNum(num int) {
 		return
 	}
 
+	// 双堆求解思路
+	// 1. 左边堆：大顶堆
+	// 2. 右边堆：小顶堆
+
 	mv := this.maxHP.Top().(int)
 	if mv >= num {
 		heap.Push(&this.maxHP, num)

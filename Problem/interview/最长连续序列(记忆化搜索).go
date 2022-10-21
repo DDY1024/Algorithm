@@ -22,19 +22,24 @@ func longestConsecutive(nums []int) int {
 
 	// 由于 -10^9 <= nums[i] <= 10^9 数据范围比较大，因此采用记忆化搜索的方式进行求解
 	dp := make(map[int]int, n)
+
 	var calc func(x int) int
 	calc = func(x int) int {
 		if !mark[x] {
 			return 0
 		}
+
 		if r, ok := dp[x]; ok {
 			return r
 		}
+
 		dp[x] = calc(x+1) + 1
 		return dp[x]
 	}
+
 	for i := 0; i < n; i++ {
 		ans = maxInt(ans, calc(nums[i]))
 	}
+
 	return ans
 }

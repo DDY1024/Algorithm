@@ -7,7 +7,7 @@ func permute(nums []int) [][]int {
 	var do func(pos int)
 	do = func(pos int) {
 		if pos >= n {
-			ans = append(ans, append([]int{}, nums...)) // 利用 append 操作实现一个 slice 的拷贝
+			ans = append(ans, append([]int(nil), nums...)) // slice 拷贝
 			return
 		}
 
@@ -18,5 +18,6 @@ func permute(nums []int) [][]int {
 		}
 	}
 	do(0)
+
 	return ans
 }

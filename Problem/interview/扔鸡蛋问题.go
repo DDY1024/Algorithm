@@ -65,8 +65,8 @@ func superEggDrop(k int, n int) int {
 	return dp[k][n]
 }
 
-// 另外一种动态规划思路
-// dp[i][j] 表示 i 次操作，j 个鸡蛋最多可以确定的楼层数
+// 另外一种动态规划求解思路:
+// dp[i][j]：i 次操作，j 个鸡蛋最多可以确定的楼层数
 func superEggDropTwo(k int, n int) int {
 	dp := make([][]int, n+1)
 	for i := 0; i <= n; i++ {

@@ -52,3 +52,5 @@ func findKthElement(nums1, nums2 []int, k int) int {
 
 	// not arrive
 }
+
+// 寻找第 k 大的数，通过二分的方法逐步缩减求解区间

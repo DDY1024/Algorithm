@@ -38,7 +38,7 @@ func sort(head, tail *ListNode) *ListNode {
 		return head
 	}
 
-	// 快慢指针寻找链表中点，进行链表划分
+	// 快慢指针寻找链表中点
 	slow, fast := head, head
 	for fast != tail {
 		slow = slow.Next
