@@ -1,6 +1,8 @@
 package main
 
-import "sort"
+import (
+	"sort"
+)
 
 // 题目链接: https://leetcode.cn/problems/number-of-good-paths/
 //
