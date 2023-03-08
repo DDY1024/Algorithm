@@ -1,9 +1,12 @@
 package main
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
-// 二分查找值为 target 元素
-func binarySearchMatrix(nums []int, target int) int {
+// 情况一：查找确定值 target
+func searchOne(nums []int, target int) int {
 	low, high := 0, len(nums)-1
 	for low <= high {
 		mid := low + (high-low)>>1
@@ -18,96 +21,83 @@ func binarySearchMatrix(nums []int, target int) int {
 	return -1
 }
 
-// 二分查找第一个与 target 相等的元素，时间复杂度 O(logn)
-func searchFirstEqualElement(nums []int, target int) int {
-	low, high := 0, len(nums)-1
-	for low <= high {
-		mid := low + ((high - low) >> 1)
-		if nums[mid] > target {
-			high = mid - 1
-		} else if nums[mid] < target {
-			low = mid + 1
-		} else {
-			if (mid == 0) || (nums[mid-1] != target) { // 找到第一个与 target 相等的元素
-				return mid
-			}
-			high = mid - 1
-		}
-	}
-	return -1
-}
-
-// 二分查找最后一个与 target 相等的元素，时间复杂度 O(logn)
-func searchLastEqualElement(nums []int, target int) int {
-	low, high := 0, len(nums)-1
-	for low <= high {
-		mid := low + ((high - low) >> 1)
-		if nums[mid] > target {
-			high = mid - 1
-		} else if nums[mid] < target {
-			low = mid + 1
-		} else {
-			if (mid == len(nums)-1) || (nums[mid+1] != target) { // 找到最后一个与 target 相等的元素
-				return mid
-			}
-			low = mid + 1
-		}
-	}
-	return -1
-}
-
-// 二分查找第一个大于等于 target 的元素，时间复杂度 O(logn)
-func searchFirstGreaterElement(nums []int, target int) int {
-	low, high := 0, len(nums)-1
+// 情况二：lower_bound，查找第一个 >= target 的元素
+func searchTwo(nums []int, target int) int {
+	low, high, idx := 0, len(nums)-1, -1
 	for low <= high {
 		mid := low + ((high - low) >> 1)
 		if nums[mid] >= target {
-			if (mid == 0) || (nums[mid-1] < target) { // 找到第一个大于等于 target 的元素
-				return mid
-			}
+			idx = mid
 			high = mid - 1
 		} else {
 			low = mid + 1
 		}
 	}
-	return -1
+	return idx
 }
 
-// 二分查找最后一个小于等于 target 的元素，时间复杂度 O(logn)
-func searchLastLessElement(nums []int, target int) int {
-	low, high := 0, len(nums)-1
+// 情况三：uppder_bound，查找第一个 > target 的元素
+func searchThree(nums []int, target int) int {
+	low, high, idx := 0, len(nums)-1, -1
+	for low <= high {
+		mid := low + ((high - low) >> 1)
+		if nums[mid] > target {
+			idx = mid
+			high = mid - 1
+		} else {
+			low = mid + 1
+		}
+	}
+	return idx
+}
+
+// 情况四：查找最后一个 <= target 的元素
+func searchFour(nums []int, target int) int {
+	low, high, idx := 0, len(nums)-1, -1
 	for low <= high {
 		mid := low + ((high - low) >> 1)
 		if nums[mid] <= target {
-			if (mid == len(nums)-1) || (nums[mid+1] > target) { // 找到最后一个小于等于 target 的元素
-				return mid
-			}
+			idx = mid
 			low = mid + 1
 		} else {
 			high = mid - 1
 		}
 	}
-	return -1
+	return idx
 }
 
+// 标准库 sort.Search 应用
+//  1. 当 sort.Search 没有查找到指定目标元素时，返回数组大小 n
+//     2.
 func main() {
-	var nums []int
-	var target int
+	var (
+		nums   []int // 有序数组（升序）
+		target int   // 目标值
+	)
 
-	// binarySearchMatrix
-	// searchFirstEqualElement
-	// searchFirstGreaterElement
-	sort.Search(len(nums), func(idx int) bool {
-		return nums[idx] >= target
+	// 情况一：查找指定值 target
+	idx := sort.Search(len(nums), func(i int) bool {
+		return nums[i] >= target
+	})
+	if idx >= len(nums) || nums[idx] != target {
+		fmt.Println("No")
+	}
+
+	// 情况二：查找 >=  target
+	sort.Search(len(nums), func(i int) bool {
+		return nums[i] >= target
 	})
 
-	// searchLastEqualElement
-	// searchLastLessElement
-	// idx :=
-	sort.Search(len(nums), func(idx int) bool {
-		return nums[idx] > target
+	// 情况三：查找 > target
+	sort.Search(len(nums), func(i int) bool {
+		// nums[i] >= target+1
+		return nums[i] > target
 	})
-	//nums[idx-1]
 
-	// sort.Search() 标准库函数是基本可以满足我们所有场景下二分查找的需求
+	// 情况四：查找 <= target 的最大值
+	// 1. 反转数组（降序）
+	// 2. sort.Search
+	sort.Search(len(nums), func(i int) bool {
+		return nums[i] <= target
+	})
 }

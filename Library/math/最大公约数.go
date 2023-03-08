@@ -101,7 +101,7 @@ func modEquation(a, b, n int) int {
 // ax = 1 (mod n)
 func inv(a, n int) int {
 	var d, x, y int
-	d = extendGcd(a, n, &x, &y)
+	d = extendGCD(a, n, &x, &y)
 	if d != 1 {
 		return -1
 	}

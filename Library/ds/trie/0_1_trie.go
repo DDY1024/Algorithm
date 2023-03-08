@@ -1,12 +1,8 @@
 package main
 
-// 0-1 字典树，顾名思义每个节点最多包含两个字节节点（0 或 1）
+// 0-1 字典树
+//		每个节点只包括两个孩子节点，即 0 和 1
 //
-// 利用 0-1 字典树可以求解下面这几类题目
-// 1. 求解数组中两个元素的最大异或和
-//
-//
-// 相关题目
 // 1. 最大异或和: https://leetcode-cn.com/problems/maximum-xor-of-two-numbers-in-an-array/
 
 const (
@@ -15,57 +11,43 @@ const (
 
 type TrieNode struct {
 	child [2]*TrieNode
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func NewTrieNode() *TrieNode {
-	return &TrieNode{}
+	val   int
 }
 
 func getBit(val, pos int) int {
-	return (val >> uint(pos)) & 1
+	return (val >> pos) & 1
 }
 
-func Insert(root *TrieNode, val int) {
-	cur := root
+func insert(cur *TrieNode, val int) {
 	for i := MaxBits - 1; i >= 0; i-- {
 		bit := getBit(val, i)
 		if cur.child[bit] == nil {
-			cur.child[bit] = NewTrieNode()
+			cur.child[bit] = &TrieNode{}
 		}
 		cur = cur.child[bit]
 	}
+	cur.val = val
 }
 
-func Find(root *TrieNode, val int) *TrieNode {
-	cur := root
+func search(cur *TrieNode, val int) bool {
 	for i := MaxBits - 1; i >= 0; i-- {
 		bit := getBit(val, i)
 		if cur.child[bit] == nil {
-			return nil
+			return false
 		}
 		cur = cur.child[bit]
 	}
-	return cur
+	return true
 }
 
-func MaxXor(root *TrieNode, val int) int {
+func maxXor(cur *TrieNode, val int) int {
 	ret := 0
-	cur := root
 	for i := MaxBits - 1; i >= 0; i-- {
 		bit := getBit(val, i)
-		if cur.child[bit^1] != nil { // 异或性质
+		if cur.child[bit^1] != nil {
 			cur = cur.child[bit^1]
-			ret |= 1 << uint(i)
-			continue
-		}
-		if cur.child[bit] != nil {
+			ret |= 1 << i
+		} else {
 			cur = cur.child[bit]
 		}
 	}

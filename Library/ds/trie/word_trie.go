@@ -1,31 +1,22 @@
 package main
 
-// 常规字典树介绍参考: https://segmentfault.com/a/1190000040801084
+// 字典树（词典）: https://segmentfault.com/a/1190000040801084
 
 type Node struct {
 	child [26]*Node
-	val   string // 可以为任意类型 interface{}
-	cnt   int    // 叶子节点出现次数
-
-	// isRoot bool
-	// isLeaf bool   // 叶子节点标志（针对长度不同的字符串插入情况）
-
-}
-
-func NewNode() *Node {
-	return &Node{}
+	val   string
+	cnt   int
 }
 
 func getChild(ch byte) int {
 	return int(ch - 'a')
 }
 
-func Insert(root *Node, s string) {
-	cur := root
-	for _, ch := range s {
-		idx := getChild(byte(ch))
+func insert(cur *Node, s string) {
+	for i := 0; i < len(s); i++ {
+		idx := getChild(s[i])
 		if cur.child[idx] == nil {
-			cur.child[idx] = NewNode()
+			cur.child[idx] = &Node{}
 		}
 		cur = cur.child[idx]
 	}
@@ -33,10 +24,9 @@ func Insert(root *Node, s string) {
 	cur.cnt++
 }
 
-func Exist(root *Node, s string) bool {
-	cur := root
-	for _, ch := range s {
-		idx := getChild(byte(ch))
+func search(cur *Node, s string) bool {
+	for i := 0; i < len(s); i++ {
+		idx := getChild(s[i])
 		if cur.child[idx] == nil {
 			return false
 		}

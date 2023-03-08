@@ -1,75 +1,63 @@
 package main
 
-// 题目链接：https://leetcode.cn/problems/word-search-ii/
-//
-// 1. 将 words 列表构建字典树
-// 2. 利用字典树在回溯过程中进行剪枝优化
+// 题目链接（中等）：https://leetcode.cn/problems/word-search/
+// 题目链接（困难）：https://leetcode.cn/problems/word-search-ii/
+
+// 1. 利用 Trie 存储整个单词词典
+// 2. 在 dfs 搜索时，借助 Trie 进行判断，剪枝优化
 
 type TrieNode struct {
-	child  [26]*TrieNode
-	isLeaf bool
-	word   string
-}
-
-type Trie struct {
-	root *TrieNode
+	child [26]*TrieNode
+	flag  bool
+	word  string
 }
 
 func NewTrieNode() *TrieNode {
 	return &TrieNode{}
 }
 
-func NewTrie() *Trie {
-	return &Trie{
-		root: NewTrieNode(),
-	}
-}
-
-func (this *Trie) Insert(word string) {
+func insert(root *TrieNode, word string) {
 	n := len(word)
-	cur := this.root
 	for i := 0; i < n; i++ {
 		cidx := int(word[i] - 'a')
-		if cur.child[cidx] == nil {
-			cur.child[cidx] = NewTrieNode()
+		if root.child[cidx] == nil {
+			root.child[cidx] = NewTrieNode()
 		}
-		cur = cur.child[cidx]
+		root = root.child[cidx]
 	}
-	cur.isLeaf = true
-	cur.word = word
+	root.flag = true
+	root.word = word
 }
 
-func (this *Trie) Search(word string) bool {
+func exists(root *TrieNode, word string) bool {
 	n := len(word)
-	cur := this.root
 	for i := 0; i < n; i++ {
 		cidx := int(word[i] - 'a')
-		if cur.child[cidx] == nil {
+		if root.child[cidx] == nil {
 			return false
 		}
-		cur = cur.child[cidx]
+		root = root.child[cidx]
 	}
-	return cur.isLeaf
+	return root.flag
 }
 
 func findWords(board [][]byte, words []string) []string {
-	trie := NewTrie()
+	root := NewTrieNode()
 	for i := 0; i < len(words); i++ {
-		trie.Insert(words[i])
+		insert(root, words[i])
 	}
 
 	m, n := len(board), len(board[0])
+	occur := make(map[string]bool, len(words))
 	dx, dy := []int{-1, 1, 0, 0}, []int{0, 0, -1, 1}
 	vis := make([][]bool, m)
 	for i := 0; i < m; i++ {
 		vis[i] = make([]bool, n)
 	}
 
-	occur := make(map[string]bool, len(words))
-
-	var search func(x, y int, cur *TrieNode)
-	search = func(x, y int, cur *TrieNode) {
-		if cur.isLeaf {
+	var dfs func(x, y int, cur *TrieNode)
+	dfs = func(x, y int, cur *TrieNode) {
+		if cur.flag {
 			occur[cur.word] = true
 		}
 
@@ -77,7 +65,7 @@ func findWords(board [][]byte, words []string) []string {
 			xx, yy := x+dx[i], y+dy[i]
 			if xx >= 0 && xx < m && yy >= 0 && yy < n && !vis[xx][yy] && cur.child[int(board[xx][yy]-'a')] != nil {
 				vis[xx][yy] = true
-				search(xx, yy, cur.child[int(board[xx][yy]-'a')])
+				dfs(xx, yy, cur.child[int(board[xx][yy]-'a')])
 				vis[xx][yy] = false
 			}
 		}
@@ -85,20 +73,19 @@ func findWords(board [][]byte, words []string) []string {
 
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
-			cur := trie.root
+			cur := root
 			if cur.child[int(board[i][j]-'a')] != nil {
 				vis[i][j] = true
-				search(i, j, cur.child[int(board[i][j]-'a')])
+				dfs(i, j, cur.child[int(board[i][j]-'a')])
 				vis[i][j] = false
 			}
 		}
 	}
 
+	// 存在重复单词，需要去重
 	ret := make([]string, 0)
-	for i := 0; i < len(words); i++ {
-		if occur[words[i]] {
-			ret = append(ret, words[i])
-		}
+	for word := range occur {
+		ret = append(ret, word)
 	}
 	return ret
 }

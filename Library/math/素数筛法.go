@@ -15,8 +15,8 @@ func doPrimeList(n int) {
 	}
 }
 
-// 2. 欧拉筛、线性筛
-// 工作原理: 每一个合数只被其 "最小的质因数" 筛到
+// 2. 线性筛
+// 原理: 每一个合数只被其 "最小的质因数" 筛到
 func doLinearPrimeList(n int) {
 	isNP := make([]bool, n+1)
 	primes := make([]int, 0, n/2)
@@ -24,10 +24,12 @@ func doLinearPrimeList(n int) {
 		if !isNP[i] {
 			primes = append(primes, i)
 		}
+
 		for _, p := range primes {
 			if p*i > n {
 				break
 			}
+
 			isNP[p*i] = true
 			// i % p == 0
 			// i * next_p 的最小素因子是 p，而不是 next_p，不满足我们只能被最小素因子 p 筛到的要求

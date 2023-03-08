@@ -1,29 +1,30 @@
 package main
 
-// 计算原理参考: https://blog.csdn.net/gatieme/article/details/45599581
-
 import (
 	"math"
 )
 
+// 参考: https://blog.csdn.net/gatieme/article/details/45599581
+
 const (
-	// 地球半径
-	earthRadiusMi = 3958 // 英里
-	earthRaidusKm = 6371 // 千米
+	earthRadiusMi = 3958 // 地球半径（英里）
+	earthRaidusKm = 6371 // 地球半径（千米）
 )
 
-type Coord struct { // 经纬度坐标
-	Lat float64
-	Lon float64
+type Coord struct {
+	Lat float64 // 纬度坐标
+	Lon float64 // 经度坐标
 }
 
-// 度数 --> 弧度
+// 度数转弧度
 func degreesToRadians(d float64) float64 {
 	return d * math.Pi / 180
 }
 
-// 计算任意两个坐标点的劣弧(小于半圆)、优弧（大于半圆）
-func Distance(p, q Coord) (float64, float64) { // 英里、千米
+// 计算任意两个坐标点的距离
+// 劣弧：小于半圆的弧
+// 优弧：大于半圆的弧
+func Distance(p, q Coord) (float64, float64) {
 	lat1 := degreesToRadians(p.Lat)
 	lon1 := degreesToRadians(p.Lon)
 	lat2 := degreesToRadians(q.Lat)

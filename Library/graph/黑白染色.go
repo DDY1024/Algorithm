@@ -1,106 +1,71 @@
 package main
 
-import (
-	"fmt"
-)
+// 1. 利用黑白染色法可以判定图中是否存在奇环
 
 const (
-	Black = -1
-	Gray  = 0
-	White = 1
+	maxV = 110
+	maxE = 10010
 )
 
-const (
-	maxVertexNum = 110
-	maxEdgeNum   = maxVertexNum * maxVertexNum
-)
-
+// 链式前向星图存储结构
 type Edge struct {
 	u, v, next int
 }
 
-// 存储图相关信息
-var head [maxVertexNum]int
-var edges [maxEdgeNum]Edge
-var edgeNum int
+var (
+	head  []int
+	edges []Edge
+	eNum  int
+)
 
-// InitGraph 初始化构建
-func InitGraph() {
-	edgeNum = 0
-	for i := 0; i < maxVertexNum; i++ {
+func initGraph(n, m int) {
+	head = make([]int, n)
+	for i := 0; i < n; i++ {
 		head[i] = -1
 	}
+	eNum = 0
+	edges = make([]Edge, m)
 }
 
-// AddEdge 有向图 或 无向图
-func AddEdge(u, v int) {
-	// 正向边
-	edges[edgeNum] = Edge{u: u, v: v, next: head[u]}
-	head[u] = edgeNum
-	edgeNum++
+func addEdge(u, v int) {
+	edges[eNum] = Edge{u, v, head[u]}
+	head[u] = eNum
+	eNum++
 
-	// 反向边
-	edges[edgeNum] = Edge{u: v, v: u, next: head[v]}
-	head[v] = edgeNum
-	edgeNum++
+	edges[eNum] = Edge{v, u, head[v]}
+	head[v] = eNum
+	eNum++
 }
 
-// IsExistOddCycle
-func IsExistOddCycle(n int) bool {
-
+// 判定是否存在奇环
+// 0: 未染色
+// 1: 黑色
+// 2: 白色
+// 3: mask
+func check(n int) bool {
+	mask := 3
 	color := make([]int, n+1)
+
 	var dfs func(u, c int) bool
 	dfs = func(u, c int) bool {
 		color[u] = c
 		for i := head[u]; i != -1; i = edges[i].next {
-			if color[edges[i].v] == Gray {
-				return dfs(edges[i].v, -c)
+			v := edges[i].v
+			if color[v] == 0 { // 未染色
+				return dfs(v, c^mask)
 			}
-			if color[u] == color[edges[i].v] {
+			if color[u] == color[v] {
 				return true
 			}
 		}
 		return false
 	}
 
-	var isExist bool
 	for i := 1; i <= n; i++ {
-		if color[i] == Gray {
-			isExist = isExist || dfs(i, Black)
-		}
-		if isExist {
-			break
+		// 多个连通分支
+		if color[i] == 0 && dfs(i, 1) {
+			return true
 		}
 	}
-	return isExist
-}
-
-func main() {
-	// 1. 奇环
-	InitGraph()
-	AddEdge(1, 2)
-	AddEdge(2, 3)
-	AddEdge(3, 1)
-	fmt.Println(IsExistOddCycle(3))
-
-	// 2. 偶环
-	InitGraph()
-	AddEdge(1, 2)
-	AddEdge(2, 1)
-	fmt.Println(IsExistOddCycle(2))
-
-	// 3. 无环
-	InitGraph()
-	AddEdge(1, 2)
-	AddEdge(2, 3)
-	fmt.Println(IsExistOddCycle(3))
-
-	// 4. 奇环 + 偶环
-	InitGraph()
-	AddEdge(1, 2)
-	AddEdge(2, 3)
-	AddEdge(3, 1)
-	AddEdge(4, 5)
-	AddEdge(5, 6)
-	fmt.Println(IsExistOddCycle(6))
+	return false
 }

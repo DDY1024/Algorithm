@@ -19,26 +19,28 @@ func init() {
 // 1. 康托展开: 求解 1 ~ n 排列的排名
 func CantorExpansion(perm []int) int {
 	n := len(perm)
-	mark := make([]bool, n+1)
+	has := make([]bool, n+1)
 	for i := 1; i <= n; i++ {
-		mark[i] = true
+		has[i] = true
 	}
 
 	rank := 0
 	for i := 0; i < n; i++ {
 		lessCnt := 0
 		for j := 1; j < perm[i]; j++ {
-			if mark[j] {
+			if has[j] {
 				lessCnt++
 			}
 		}
-		rank += factor[lessCnt]
-		mark[perm[i]] = false
+		rank += lessCnt * factor[n-1-i] // lessCnt * fac
+		has[perm[i]] = false
 	}
-	return rank + 1
+	return rank + 1 // 加上自身 + 1
 }
 
 // 2. 逆康托展开: 给定排名，还原排列
+// 4, 24 --> [4, 3, 2, 1]
+// 4, 1  --> [1, 2, 3, 4]
 func InverseCantorExpansion(n, rank int) []int {
 	result := make([]int, 0, n)
 	mark := make([]bool, n+1)
