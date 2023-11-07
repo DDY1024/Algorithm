@@ -6,10 +6,7 @@ import (
 )
 
 const (
-	inf = 0x3f3f3f3f
-)
-
-var (
+	inf      = 0x3f3f3f3f3f3f3f3f
 	maxLevel = 20
 )
 
@@ -31,13 +28,10 @@ func minInt(a, b int) int {
 	return b
 }
 
-// level 取值范围 [0, maxLevel], 其中第一层存储全部的数据元素，上层只存储指针
-//
-//  1. redis 中上升层数的概率为 1/4
-//     rand() & 0xffff < 1/4 * 0xffff
+// Redis 元素上升概率：rand() & 0xffff < 0xffff/4
 func randomLevel() int {
 	level := 0
-	for rand.Intn(100) < 50 { // 1/2 概率爬升
+	for level < maxLevel && rand.Intn(100) < 50 { // 注意需要设置下 maxLevel 上限限制，避免一些无效计算
 		level++
 	}
 	return minInt(level, maxLevel)
@@ -49,25 +43,25 @@ type Node struct {
 	next []*Node
 }
 
-func NewNode(key, val, n int) *Node {
+func NewNode(key int, val int, level int) *Node {
 	return &Node{
 		key:  key,
 		val:  val,
-		next: make([]*Node, n), // skiplist 最大高度
+		next: make([]*Node, level+1),
 	}
 }
 
 type Skiplist struct {
 	level int
 	size  int
-	head  *Node // 增加 head 节点，方便处理
+	head  *Node // head 节点
 }
 
 func NewSkiplist() Skiplist {
 	return Skiplist{
 		level: 0,
 		size:  0,
-		head:  NewNode(-inf, -inf, maxLevel+1), // [0, maxLevel]
+		head:  NewNode(-inf, -inf, maxLevel), // head 节点存储 key 的最小值
 	}
 }
 
@@ -76,16 +70,19 @@ func (sl *Skiplist) Search(key int) *Node {
 		return nil
 	}
 
-	cur, pre := sl.head, sl.head
+	cur, prev := sl.head, sl.head
 	for level := sl.level; level >= 0; level-- {
-		for cur = cur.next[level]; cur != nil && cur.key < key; pre, cur = cur, cur.next[level] {
+		for cur = cur.next[level]; cur != nil && cur.key < key; prev, cur = cur, cur.next[level] {
 		}
+
 		if cur != nil && cur.key == key {
 			return cur
 		}
-		// cur = nil 或 cur.key > key，在下层进行搜索时需要前移一下，赋值 pre
-		cur = pre
+
+		// 在下一层搜索时，优先赋值 prev
+		cur = prev
 	}
+
 	return nil
 }
 
@@ -94,38 +91,41 @@ func (sl *Skiplist) SearchLessEqual(key int) *Node {
 		return nil
 	}
 
-	cur, pre := sl.head, sl.head
+	cur, prev := sl.head, sl.head
 	for level := sl.level; level >= 0; level-- {
-		for cur = cur.next[level]; cur != nil && cur.key < key; pre, cur = cur, cur.next[level] {
+		for cur = cur.next[level]; cur != nil && cur.key < key; prev, cur = cur, cur.next[level] {
 		}
+
 		if cur != nil && cur.key == key {
 			return cur
 		}
-		cur = pre
+
+		cur = prev
 	}
 
-	if cur == sl.head { // head 节点为了方便处理为保留节点，非真实节点
+	if cur == sl.head {
 		return nil
 	}
 	return cur
 }
 
 func (sl *Skiplist) Insert(key, val int) {
+	level := maxInt(randomLevel(), sl.level)
+	cur, prev := sl.head, sl.head
 
-	rLevel := randomLevel()           // 获取该节点上升的层数
-	level := maxInt(rLevel, sl.level) // 更新最大层数
-
-	cur, pre := sl.head, sl.head
-	updateNds := make([]*Node, level+1) // 先找到查找路径，然后进行插入操作
+	// 1. 寻找每层的前驱节点
+	updateNds := make([]*Node, level+1)
 	for i := level; i >= 0; i-- {
-		for cur = cur.next[i]; cur != nil && cur.key < key; pre, cur = cur, cur.next[i] {
+		for cur = cur.next[i]; cur != nil && cur.key < key; prev, cur = cur, cur.next[i] {
 		}
-		updateNds[i] = pre // 按层数记录待更新的前驱节点
-		cur = pre
+		updateNds[i] = prev
+		cur = prev
 	}
 
-	nd := NewNode(key, val, maxLevel+1)
+	// 2. 按照层次依次插入新节点
+	nd := NewNode(key, val, maxLevel)
 	for i := level; i >= 0; i-- {
+		// Tips：这个判断是没有必要的，因为 sl.head 永远可以兜底，updateNds[i] 永远不为 nil
 		if updateNds[i] != nil {
 			nd.next[i] = updateNds[i].next[i]
 			updateNds[i].next[i] = nd
@@ -137,35 +137,38 @@ func (sl *Skiplist) Insert(key, val int) {
 }
 
 func (sl *Skiplist) Delete(key int) bool {
+	var (
+		nd        *Node
+		updateNds = make([]*Node, sl.level+1)
+		cur       = sl.head
+		prev      = sl.head
+	)
 
-	var nd *Node                       // 保存待删除的节点
-	upNds := make([]*Node, sl.level+1) // 删除操作同样需要保存更新路径
-	cur, pre := sl.head, sl.head
-
-	for level := sl.level; level >= 0; level-- {
-		for cur = cur.next[level]; cur != nil && cur.key < key; pre, cur = cur, cur.next[level] {
+	// 1. 查找待删除的节点，保存前驱节点路径
+	for i := sl.level; i >= 0; i-- {
+		for cur = cur.next[i]; cur != nil && cur.key < key; prev, cur = cur, cur.next[i] {
 		}
 
-		// 查找到待删除的节点
+		// 找到待删除的节点
 		if cur != nil && cur.key == key {
 			nd = cur
 		}
 
-		upNds[level] = pre
-		cur = pre
+		updateNds[i] = prev
+		cur = prev
 	}
 
-	// 待删除节点不存在
 	if nd == nil {
 		return false
 	}
 
-	// 更新路径上的节点指向信息
+	// 2. 删除每层的节点
 	for i := sl.level; i >= 0; i-- {
-		if upNds[i] != nil {
-			upNds[i].next[i] = nd.next[i]
+		if updateNds[i] != nil {
+			updateNds[i].next[i] = nd.next[i]
 		}
-		if sl.head.next[i] == nil && i > 0 { // 维护更新最大层数
+		// 当前层已经没有节点，更新总层数
+		if sl.head.next[i] == nil && i > 0 {
 			sl.level--
 		}
 	}
@@ -174,21 +177,26 @@ func (sl *Skiplist) Delete(key int) bool {
 	return true
 }
 
+// 1. 只有 <=
+// 2.  只有 >
+// 3.  <= 和 > 均有
 func (sl *Skiplist) FindAbsNearest(key int) *Node {
 	if sl.size == 0 {
 		return nil
 	}
 
 	nd := sl.SearchLessEqual(key)
+	// 不存在 <= key 的元素，则第一个元素最接近
 	if nd == nil {
 		return sl.head.next[0] // 没有 <=, 直接返回第一个元素
 	}
 
+	// 查找到相同的 key 或 不存在 > key 的节点
 	if nd.key == key || nd.next[0] == nil {
 		return nd
 	}
 
-	// 最底层是整个完整的有序链表
+	// 比较 < key 和 > key 的节点距离，选择距离最近的节点
 	if key-nd.val <= nd.next[0].val-key {
 		return nd
 	}

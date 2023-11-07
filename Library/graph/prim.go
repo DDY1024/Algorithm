@@ -1,22 +1,16 @@
 package main
 
-// 参考资料：https://blog.csdn.net/thexue/article/details/121916959
+func prim(n int, g [][]int) int {
+	var (
+		inf = 0x3f3f3f3f3f3f3f3f
+		dis = make([]int, n)
+		vis = make([]bool, n)
+	)
 
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// prim 算法（加点法）
-func prim(adj [][]int, n int) int {
-	dis := make([]int, n)
-	vis := make([]bool, n)
-	for i := 0; i < n; i++ {
-		dis[i] = 0x3f3f3f3f
-	}
 	dis[0] = 0
+	for i := 1; i < n; i++ {
+		dis[i] = inf
+	}
 
 	res := 0
 	for i := 0; i < n; i++ {
@@ -30,11 +24,15 @@ func prim(adj [][]int, n int) int {
 			}
 		}
 
+		if u == -1 { // 图不连通，直接返回
+			return inf
+		}
+
 		vis[u] = true
 		res += dis[u]
 		for v := 0; v < n; v++ {
-			if !vis[v] {
-				dis[v] = minInt(dis[v], adj[u][v])
+			if !vis[v] && dis[v] > g[u][v] {
+				dis[v] = g[u][v]
 			}
 		}
 	}

@@ -1,15 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 )
+
+// mid 选取存在两种方式：
+// 	靠近左端点：l + (r-l)>>1
+//  靠近右端点：r - (r-l)>>1
 
 // 情况一：查找确定值 target
 func searchOne(nums []int, target int) int {
 	low, high := 0, len(nums)-1
 	for low <= high {
-		mid := low + (high-low)>>1
+		mid := low + ((high - low) >> 1)
 		if nums[mid] == target {
 			return mid
 		} else if nums[mid] > target {
@@ -66,38 +69,37 @@ func searchFour(nums []int, target int) int {
 	return idx
 }
 
-// 标准库 sort.Search 应用
-//  1. 当 sort.Search 没有查找到指定目标元素时，返回数组大小 n
-//     2.
-func main() {
+// f(n) = true --> f(n+1) = true ... f(n+k) = true
+func stdTest() {
 	var (
-		nums   []int // 有序数组（升序）
+		nums   []int // 升序数组
 		target int   // 目标值
+		n      = len(nums)
 	)
 
 	// 情况一：查找指定值 target
-	idx := sort.Search(len(nums), func(i int) bool {
+	idx := sort.Search(n, func(i int) bool {
 		return nums[i] >= target
 	})
-	if idx >= len(nums) || nums[idx] != target {
-		fmt.Println("No")
+	if idx >= n || nums[idx] != target {
+
 	}
 
 	// 情况二：查找 >=  target
-	sort.Search(len(nums), func(i int) bool {
+	sort.Search(n, func(i int) bool {
 		return nums[i] >= target
 	})
 
 	// 情况三：查找 > target
-	sort.Search(len(nums), func(i int) bool {
-		// nums[i] >= target+1
+	sort.Search(n, func(i int) bool {
 		return nums[i] > target
 	})
 
 	// 情况四：查找 <= target 的最大值
-	// 1. 反转数组（降序）
-	// 2. sort.Search
-	sort.Search(len(nums), func(i int) bool {
+	//	1. reverse
+	//  2. search
+	sort.Sort(sort.Reverse(sort.IntSlice(nums)))
+	sort.Search(n, func(i int) bool {
 		return nums[i] <= target
 	})
 }

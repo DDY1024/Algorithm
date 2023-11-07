@@ -1,19 +1,16 @@
 package other
 
-// 参考自：https://oi-wiki.org/ds/dsu/
-// 1. 普通并查集实现
-
+// 1. 普通并查集
 func initSet(n int, parent []int) {
-	for i := 0; i < n; i++ { // [0,n) 或 [1,n] 均可
+	for i := 0; i < n; i++ {
 		parent[i] = -1
 	}
 }
 
 func findSet(x int, parent []int) int {
-	if parent[x] < 0 { // parent[root] < 0
+	if parent[x] < 0 { // root
 		return x
 	}
-
 	parent[x] = findSet(parent[x], parent)
 	return parent[x]
 }
@@ -34,4 +31,4 @@ func unionSet(x, y int, parent []int) {
 	}
 }
 
-// 2. 带权并查集 or 种类并查集
+// 2. 带权并查集、种类并查集

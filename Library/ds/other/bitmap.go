@@ -4,6 +4,7 @@ const (
 	mask = 0x07
 )
 
+// 1 byte = 8 bit
 type Bitmap struct {
 	data []byte
 	size int
@@ -38,7 +39,7 @@ func (b *Bitmap) Unset(pos int) bool {
 	if pos >= b.size {
 		return false
 	}
-	b.data[pos>>3] &^= 1 << (pos & mask)
+	b.data[pos>>3] &^= 1 << (pos & mask) // &^=
 	return true
 }
 
@@ -54,6 +55,7 @@ func (b *Bitmap) Resize(size int) {
 	if b.size == size {
 		return
 	}
+
 	data := make([]byte, size/8, size/8)
 	copy(data, b.data)
 	b.data = data

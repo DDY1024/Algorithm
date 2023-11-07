@@ -1,36 +1,52 @@
 package main
 
-// 字典树（词典）: https://segmentfault.com/a/1190000040801084
+import "fmt"
 
 type Node struct {
-	child [26]*Node
-	val   string
-	cnt   int
+	childrens [26]*Node
+	value     string
+	count     int
 }
 
-func getChild(ch byte) int {
-	return int(ch - 'a')
-}
-
-func insert(cur *Node, s string) {
-	for i := 0; i < len(s); i++ {
-		idx := getChild(s[i])
-		if cur.child[idx] == nil {
-			cur.child[idx] = &Node{}
-		}
-		cur = cur.child[idx]
+// A ~ Z 或 a ~ z
+func child(b byte) int {
+	if b >= 'A' && b <= 'Z' {
+		return int(b - 'A')
 	}
-	cur.val = s
-	cur.cnt++
+	return int(b - 'a')
 }
 
-func search(cur *Node, s string) bool {
+func insertNode(root *Node, s string) {
 	for i := 0; i < len(s); i++ {
-		idx := getChild(s[i])
-		if cur.child[idx] == nil {
+		idx := child(s[i])
+		if root.childrens[idx] == nil {
+			root.childrens[idx] = &Node{}
+		}
+		root = root.childrens[idx]
+	}
+	root.value = s
+	root.count++
+}
+
+func findNode(root *Node, s string) bool {
+	for i := 0; i < len(s); i++ {
+		idx := child(s[i])
+		if root.childrens[idx] == nil {
 			return false
 		}
-		cur = cur.child[idx]
+		root = root.childrens[idx]
 	}
-	return cur.cnt > 0
+	return root.count > 0 // 必须检查 count > 0，有可能是前缀字符串
+}
+
+func main() {
+	root := &Node{}
+	insertNode(root, "hello")
+	fmt.Println(findNode(root, "hell"))
+	fmt.Println(findNode(root, "hello"))
+	fmt.Println(findNode(root, "h"))
+	insertNode(root, "hxy")
+	fmt.Println(findNode(root, "hc"))
+	fmt.Println(findNode(root, "hx"))
+	fmt.Println(findNode(root, "hxy"))
 }

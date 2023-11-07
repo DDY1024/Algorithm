@@ -1,15 +1,21 @@
 package main
 
-// https://leetcode-cn.com/problems/maximize-palindrome-length-from-subsequences/
-// 最长回文子序列
-// 1. O(n^2) 区间 DP
-//		dp[i][j] = dp[i+1][j-1] + 2，如果 s[i] == s[j]
-//      dp[i][j] = max{ dp[i+1][j], dp[i][j-1] }，如果 s[i] != s[j]
-//	边界条件
+// 最长回文子序列（区间 DP）
+// 1. 初始条件
 // 		dp[i][i] = 1
+// 2. 状态转移
+//      如果 s[i] == s[j]，则 dp[i][j] = dp[i+1][j-1] + 2  (贪心计算)
+//      如果 s[i] != s[j]，则 dp[i][j] = max{ dp[i+1][j], dp[i][j-1] }
 
 func maxInt(a, b int) int {
 	if a > b {
+		return a
+	}
+	return b
+}
+
+func minInt(a, b int) int {
+	if a < b {
 		return a
 	}
 	return b
@@ -27,7 +33,6 @@ func longestPalindrome(word1 string, word2 string) int {
 	word = append(word, []byte(word2)...)
 
 	n := n1 + n2
-	// 边界条件
 	for i := 0; i < n; i++ {
 		dp[i][i] = 1
 	}
@@ -51,6 +56,5 @@ func longestPalindrome(word1 string, word2 string) int {
 			}
 		}
 	}
-
 	return ans
 }

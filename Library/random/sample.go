@@ -12,18 +12,20 @@ import (
 //      当内存无法加载全部数据时，如何从包含未知大小的数据流中随机选取 k 个数据，并且要保证每个数据被抽取到的概率相等
 
 // 问题一
-//      当 k = 1 时，即数据流含有 N 个数，我们知道如果要保证所有的数被抽到的概率相等，那么每个数抽到的概率应该为 1/N
+//      当 k = 1 时，数据流含有 N 个数，如果要保证所有的数被抽到的概率相等，那么每个数抽到的概率应该为 1/N
 //      这个问题的解决方案本质上和洗牌算法是相同的，洗牌算法本身保证了每个数在某一位置出现的概率相等
 
+var r *rand.Rand
+
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	r = rand.New(rand.NewSource(time.Now().UnixNano()))
+	// rand.Seed(time.Now().UnixNano())
 }
 
 func solveOne(data []int) int {
 	ret := data[0]
-	// Tips: 换做无界数据流，我们直接累计计数，计算替换概率即可
 	for i := 1; i < len(data); i++ {
-		if rand.Intn(i) == 0 {
+		if r.Intn(i+1) == 0 {
 			ret = data[i]
 		}
 	}
@@ -33,12 +35,11 @@ func solveOne(data []int) int {
 // 问题二
 //      当 k = m 时，由最初选择一个元素变成了最初选择 m 个元素；然后从第 m+1 元素开始，进行 random ，如果落在区间 [0,m-1] 内
 // 则随机替换其中的一个元素
-//
 
 func solveTwo(data []int, k int) []int {
 	n := len(data)
 	for i := k; i < n; i++ {
-		p := rand.Intn(i + 1)
+		p := r.Intn(i + 1) //
 		if p < k {
 			data[i], data[p] = data[p], data[i]
 		}

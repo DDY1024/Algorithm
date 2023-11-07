@@ -1,55 +1,81 @@
 package main
 
-// 0-1 字典树
-//		每个节点只包括两个孩子节点，即 0 和 1
-//
-// 1. 最大异或和: https://leetcode-cn.com/problems/maximum-xor-of-two-numbers-in-an-array/
+// 0-1 字典树：每个非叶子节点只包括两个节点 0 和 1
+// 数组最大异或和: https://leetcode-cn.com/problems/maximum-xor-of-two-numbers-in-an-array/
 
 const (
-	MaxBits = 31
+	maxBits = 30
 )
 
-type TrieNode struct {
-	child [2]*TrieNode
-	val   int
+// 0 ^ 0 = 0
+// 1 ^ 0 = 1
+// 0 ^ 1 = 1
+// 1 ^ 1 = 0
+
+type Node struct {
+	child [2]*Node
+	value int
 }
 
-func getBit(val, pos int) int {
+func child(val, pos int) int {
 	return (val >> pos) & 1
 }
 
-func insert(cur *TrieNode, val int) {
-	for i := MaxBits - 1; i >= 0; i-- {
-		bit := getBit(val, i)
-		if cur.child[bit] == nil {
-			cur.child[bit] = &TrieNode{}
+func insertNode(root *Node, val int) {
+	// 按照二进制高位 --> 低位顺序插入字典树
+	for i := maxBits; i >= 0; i-- {
+		idx := child(val, i)
+		if root.child[idx] == nil {
+			root.child[idx] = &Node{}
 		}
-		cur = cur.child[bit]
+		root = root.child[idx]
 	}
-	cur.val = val
+	root.value = val
 }
 
-func search(cur *TrieNode, val int) bool {
-	for i := MaxBits - 1; i >= 0; i-- {
-		bit := getBit(val, i)
-		if cur.child[bit] == nil {
+// 由于 0-1 字典树中我们将每个数已经转化成固定长度的二进制数，因此针对查找方法，能够走到最终的必然为叶子节点，直接返回 true 即可
+func findNode(root *Node, val int) bool {
+	for i := maxBits; i >= 0; i-- {
+		idx := child(val, i)
+		if root.child[idx] == nil {
 			return false
 		}
-		cur = cur.child[bit]
+		root = root.child[idx]
 	}
 	return true
 }
 
-func maxXor(cur *TrieNode, val int) int {
-	ret := 0
-	for i := MaxBits - 1; i >= 0; i-- {
-		bit := getBit(val, i)
-		if cur.child[bit^1] != nil {
-			cur = cur.child[bit^1]
-			ret |= 1 << i
+func maxXor(root *Node, x int) int {
+	res := 0
+	for i := maxBits; i >= 0; i-- {
+		idx := child(x, i)
+		if root.child[idx^1] != nil {
+			res |= 1 << i
+			root = root.child[idx^1]
 		} else {
-			cur = cur.child[bit]
+			root = root.child[idx]
 		}
 	}
-	return ret
+	return res
+}
+
+func maxInt(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func findMaximumXOR(nums []int) int {
+	var (
+		root = &Node{}
+		n    = len(nums)
+		res  = 0
+	)
+
+	for i := 0; i < n; i++ {
+		insertNode(root, nums[i])
+		res = maxInt(res, maxXor(root, nums[i]))
+	}
+	return res
 }

@@ -5,27 +5,28 @@ type Item struct {
 	idx int
 }
 
-type MaxPQ []*Item
+type PriorityQueue []*Item
 
-func (pq MaxPQ) Len() int { return len(pq) }
+func (pq PriorityQueue) Len() int { return len(pq) }
 
-func (pq MaxPQ) Less(i, j int) bool {
+// 自定义优先级比较规则
+func (pq PriorityQueue) Less(i, j int) bool {
 	if pq[i].val == pq[j].val {
 		return pq[i].idx > pq[j].idx
 	}
 	return pq[i].val > pq[j].val
 }
 
-func (pq MaxPQ) Swap(i, j int) {
+func (pq PriorityQueue) Swap(i, j int) {
 	pq[i], pq[j] = pq[j], pq[i]
 }
 
-func (pq *MaxPQ) Push(x interface{}) {
+func (pq *PriorityQueue) Push(x interface{}) {
 	item := x.(*Item)
 	*pq = append(*pq, item)
 }
 
-func (pq *MaxPQ) Pop() interface{} {
+func (pq *PriorityQueue) Pop() interface{} {
 	old := *pq
 	n := len(old)
 	item := old[n-1]
@@ -33,44 +34,7 @@ func (pq *MaxPQ) Pop() interface{} {
 	return item
 }
 
-func (pq *MaxPQ) Top() interface{} {
-	if pq.Len() == 0 {
-		return nil
-	}
-	return (*pq)[0]
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-type MinPQ []*Item
-
-func (pq MinPQ) Len() int { return len(pq) }
-
-func (pq MinPQ) Less(i, j int) bool {
-	if pq[i].val == pq[j].val {
-		return pq[i].idx < pq[j].idx
-	}
-	return pq[i].val < pq[j].val
-}
-
-func (pq MinPQ) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-}
-
-func (pq *MinPQ) Push(x interface{}) {
-	item := x.(*Item)
-	*pq = append(*pq, item)
-}
-
-func (pq *MinPQ) Pop() interface{} {
-	old := *pq
-	n := len(old)
-	item := old[n-1]
-	*pq = old[0 : n-1]
-	return item
-}
-
-func (pq *MinPQ) Top() interface{} {
+func (pq *PriorityQueue) Top() interface{} {
 	if pq.Len() == 0 {
 		return nil
 	}
