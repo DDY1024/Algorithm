@@ -6,35 +6,33 @@ import (
 
 // x^y % n
 func powMod(x, y, n int) int {
-	x = x % n
-	ret := 1
+	x %= n
+	r := 1
 	for y > 0 {
 		if y&1 > 0 {
-			ret = ret * x % n
+			r = r * x % n
 		}
-
 		x = x * x % n
 		y >>= 1
 	}
-	return ret
+	return r
 }
 
-// a * b % c
-func mulMod(a, b, c int) int {
-	a %= c
-	ret := 0
-	for b > 0 {
-		if b&1 > 0 {
-			ret = (ret + a) % c
+// x * y % n
+func mulMod(x, y, n int) int {
+	x %= n
+	r := 0
+	for y > 0 {
+		if y&1 > 0 {
+			r = (r + x) % n
 		}
-
-		a = a * 2 % c
-		b >>= 1
+		x = x * 2 % n
+		y >>= 1
 	}
-	return ret
+	return r
 }
 
-// 7. 离散对数问题
+// 离散对数问题
 // a^k = b (mod m)，求解 k 使得上述同余方程成立, 其中 gcd(a, m) = 1
 // 求解该问题通常采用 Baby-step giant-step algorithm 算法
 // 算法原理参考：https://www.geeksforgeeks.org/discrete-logarithm-find-integer-k-ak-congruent-modulo-b/

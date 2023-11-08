@@ -1,7 +1,7 @@
 package main
 
 const (
-	Mod = 1e5 + 7
+	mod = 1e9 + 7
 )
 
 type Matrix struct {
@@ -13,7 +13,7 @@ type Matrix struct {
 var E *Matrix
 
 func init() {
-	E = NewMatrix(10, 10) // default 10
+	E = NewMatrix(10, 10)
 	E.Unit()
 }
 
@@ -34,7 +34,6 @@ func (m *Matrix) Clear() {
 	}
 }
 
-// 单位矩阵: row = col
 func (m *Matrix) Unit() {
 	m.Clear()
 	for i := 0; i < m.row; i++ {
@@ -42,25 +41,23 @@ func (m *Matrix) Unit() {
 	}
 }
 
-// a + b: a.row == b.row, a.col == b.col
-func Add(a, b *Matrix) *Matrix {
+func add(a, b *Matrix) *Matrix {
 	c := NewMatrix(a.row, a.col)
-	for i := 0; i < a.row; i++ {
-		for j := 0; j < a.col; j++ {
-			c.mat[i][j] = (a.mat[i][j] + b.mat[i][j]) % Mod
+	for i := 0; i < c.row; i++ {
+		for j := 0; j < c.col; j++ {
+			c.mat[i][j] = (a.mat[i][j] + b.mat[i][j]) % mod
 		}
 	}
 	return c
 }
 
-// a * b: a.col == b.row
-// c = a * b: c.row = a.row, c.col = b.col
-func Mul(a, b *Matrix) *Matrix {
+func mul(a, b *Matrix) *Matrix {
 	c := NewMatrix(a.row, b.col)
-	for i := 0; i < a.row; i++ {
-		for j := 0; j < b.col; j++ {
+	for i := 0; i < c.row; i++ {
+		for j := 0; j < c.col; j++ {
 			for k := 0; k < a.col; k++ {
-				c.mat[i][j] += (a.mat[i][k] * b.mat[k][j]) % Mod
+				c.mat[i][j] += a.mat[i][k] * b.mat[k][j]
+				c.mat[i][j] %= mod
 			}
 		}
 	}
@@ -68,30 +65,29 @@ func Mul(a, b *Matrix) *Matrix {
 }
 
 // 矩阵快速幂 a^x
-func Pow(a *Matrix, x int) *Matrix {
+func pow(a *Matrix, x int) *Matrix {
 	r := NewMatrix(a.row, a.col)
 	for x > 0 {
 		if x&1 > 0 {
-			r = Mul(r, a)
+			r = mul(r, a)
 		}
-		a = Mul(a, a)
+		a = mul(a, a)
 		x >>= 1
 	}
 	return r
 }
 
-// 矩阵快速幂和: 递归二分
+// 矩阵快速幂和
 // res = a^1 + a^2 + ... + a^x
 // res = a^1 + a^2 + ... + a^(x/2) + a^((x/2)+1) + ... + a^(x-1) + a^x
 // A = E*A = A*E
-func SumPow(a *Matrix, x int) *Matrix {
+func powSum(a *Matrix, x int) *Matrix {
 	if x == 1 {
 		return a
 	}
 
-	if x%2 == 0 {
-		return Mul(SumPow(a, x>>1), Add(E, Pow(a, x>>1)))
+	if x&1 == 0 {
+		return mul(powSum(a, x/2), add(E, pow(a, x/2)))
 	}
-
-	return Add(Pow(a, x), SumPow(a, x-1))
+	return add(pow(a, x), powSum(a, x-1))
 }

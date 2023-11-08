@@ -1,19 +1,11 @@
 package main
 
-const (
-	maxn = 1010
-)
-
-// 1. prime factor 素因子
-var factor [maxn]int
-
-func calcFactor(x int) int {
-	cnt := 0
+func calcFactor(x int) []int {
+	factor := make([]int, 0)
 	for i := 2; i*i <= x; i += 2 {
 		if x%i == 0 {
 			for x%i == 0 {
-				factor[cnt] = i
-				cnt++
+				factor = append(factor, i)
 				x /= i
 			}
 		}
@@ -22,63 +14,30 @@ func calcFactor(x int) int {
 		}
 	}
 	if x > 1 {
-		factor[cnt] = x
-		cnt++
+		factor = append(factor, x)
 	}
-	return cnt
+	return factor
 }
 
-// 素数筛法思想打表预处理素因子
-// 牵扯到多组查询的时候，预处理的方法显得非常有效
-// 素数筛法过程预处理出每个数的不同素因子数
-var allFactors [maxn][]int
-var isp [maxn]bool
-
-func initAllFactors() {
-	allFactors[2] = append(allFactors[2], 2)
-	for i := 4; i < maxn; i += 2 {
-		isp[i] = true
-		allFactors[i] = append(allFactors[i], 2)
-	}
-	// 枚举这个范围内的素因子进行处理
-	for i := 3; i <= maxn/2; i += 2 {
-		if !isp[i] {
-			// 素数本身便是其自己的素因子
-			allFactors[i] = append(allFactors[i], i)
-			for j := i + i; j < maxn; j += i {
-				isp[j] = true
-				// 此处只是记录了不同的素因子，如果需要重复记录相同的素因子，改下处理即可
-				allFactors[j] = append(allFactors[j], i)
-			}
-		}
-	}
-	return
-}
-
-// 另外一种处理多组素因子分解的方法
-// 题目要求: 输入多组查询, 对于每组查询的 x，求解其素因子分解
-// 解题思路：
-// a. 利用素数筛法的思想，求解每个数的最小素因子(SPF)
-// b. 递归处理每个数的素因子分解 f(x) = calc(x) * f(x/p)
-// 变更一下素数筛法即可, 算法复杂度为 O(NlogN)
-func solveSPF() {
-	var spf [maxn]int
-	for i := 1; i < maxn; i++ {
+// 利用素数筛法求解【最小素因子】
+func solveSPF(n int) {
+	spf := make([]int, n+1)
+	for i := 1; i <= n; i++ {
 		spf[i] = i
 	}
-	for i := 4; i < maxn; i += 2 {
+	for i := 2; i <= n; i += 2 {
 		spf[i] = 2
 	}
-	for i := 3; i*i < maxn; i += 2 {
-		if spf[i] == i { // 素数
-			for j := i * i; j < maxn; j += i {
-				if spf[j] == j { // 表明 j 第一次被素因子 i 染指
-					spf[j] = i // 存储每个数的最小素因子
+	// 最小 i * i <= n
+	for i := 3; i*i <= n; i += 2 {
+		if spf[i] == i {
+			for j := i * i; j <= n; j += i {
+				if spf[j] == j {
+					spf[j] = i
 				}
 			}
 		}
 	}
-	return
 }
 
 // 求解 [a,b] 范围内约数个数为 n 的数的个数
@@ -93,57 +52,28 @@ func solveSPF() {
 // 结论
 // a. 完全平方数，其约数个数为奇数个
 // b. 非完全平方数，其约数个数为偶数个 i, n/i
-func calcFactorNum() {
-	var f [maxn]int
-	for i := 1; i*i <= maxn; i++ {
+func calcFactorNum(n int) {
+	f := make([]int, n+1)
+	for i := 1; i*i <= n; i++ {
 		f[i*i]++
-		for j, k := i*(i+1), i+1; j < maxn; j, k = j+i, k+1 {
+		for j := i * (i + 1); j <= n; j += i {
 			f[j] += 2
 		}
 	}
-	return
 }
 
-// 素数筛法思想求解每个数的最大素因子
-func calcMaxPrimeFactor() {
-	var f [maxn]int
-	for i := 1; i < maxn; i++ {
-		f[i] = 1
-	}
-	for i := 2; i <= maxn/2; i++ {
-		if f[i] == 1 { // 素数没有任何大于 1 且非本身的约数
-			for j := i; j < maxn; j += i {
+// 利用素数筛法求解【最大素因子】
+func calcMaxPrimeFactor(n int) {
+	f := make([]int, n+1)
+	// 素数筛法的思想很实用
+	// 最大: i*2 <= n
+	for i := 2; i*2 <= n; i++ {
+		if f[i] == 0 {
+			for j := i; j <= n; j += i {
 				f[j] = i
 			}
 		}
 	}
-
-	// TODO: O(N) 预处理出前缀和
-}
-
-// 判断整数 x 的素因子是否完整包含整数 y 的素因子
-// x = p1^x1 * ... * pk^xk
-// y = p1^y1 * ... * pk^yk
-// 假设整数 x 的素因子分解包含整数 y 的所有素因子，则 gcd(x, y) 一定是 p1*p2*...*pk 的倍数，当然
-// 意味着 x 肯定是 y 的素因子分解中任意素因子组合乘积的倍数。因此，不断地 求解 d = gcd(x, y), y /= d
-// 最终 y 肯定是能变成 1 的
-// https://www.geeksforgeeks.org/check-number-divisible-prime-divisors-another-number/
-func gcd(a, b int) int {
-	if b == 0 {
-		return a
-	}
-	return gcd(b, a%b)
-}
-
-func checkOk(x, y int) bool {
-	if y == 1 { // y 已经被除成 1 了, 说明符合条件
-		return true
-	}
-	d := gcd(x, y)
-	if d == 1 { // 不符合条件的情况
-		return false
-	}
-	return checkOk(x, y/d)
 }
 
 // 假设 x 的素因子分解为: x = p1^x1 * p2^x2 * ... * pk^xk
@@ -263,33 +193,6 @@ void find_prime(int64 n, int k) {
 }
 */
 
-// 求解 (a * b) % c
-func mulMod(a, b, c int) int {
-	res := 0
-	for b > 0 {
-		if b&1 > 0 {
-			res = (res + a) % c
-		}
-		a = (a << 1) % c
-		b >>= 1
-	}
-	return res
-}
-
-// 求解 a^b % c
-func powMod(a, b, c int) int {
-	res := 1
-	for b > 0 {
-		if b&1 > 0 {
-			res = res * a % c
-			// res = mulMod(res, a, c)
-		}
-		a = a * a % c
-		b >>= 1
-	}
-	return res
-}
-
 // Find politeness of a number
 // https://www.geeksforgeeks.org/find-politeness-number/
 // 求解正整数 n 可以被连续整数 x + (x+1) + ... + (x+k) 表示的方案数
@@ -324,4 +227,39 @@ func powerOfPrimeInFactorial(n, p int) int {
 		n /= p
 	}
 	return ans
+}
+
+// 朴素素数筛法：O(n * logn * logn)
+func doPrimeList(n int) {
+	mark := make([]bool, n+1)
+	for i := 2; i*i <= n; i++ {
+		if !mark[i] {
+			for j := i * i; j <= n; j += i {
+				mark[j] = true
+			}
+		}
+	}
+}
+
+// 线性筛法：每一个合数只被其“最小质因数”筛到
+func doLinearPrimeList(n int) {
+	mark := make([]bool, n+1)
+	plist := make([]int, 0, n)
+	for i := 2; i <= n; i++ {
+		if !mark[i] {
+			plist = append(plist, i)
+		}
+
+		for _, p := range plist {
+			if p*i > n {
+				break
+			}
+			mark[p*i] = true
+			// i % p == 0
+			// i * next_p 的最小素因子是 p，而不是 next_p，不满足我们只能被最小素因子 p 筛到的要求
+			if i%p == 0 {
+				break
+			}
+		}
+	}
 }

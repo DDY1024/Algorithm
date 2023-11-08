@@ -26,7 +26,6 @@ func powMod(a, b, p int) int {
 //
 // 互质关系、费马小定理
 // invFactor[i] = powMod(factor[i], p-2, p)
-//
 func C(n, m, p int) int {
 	if m > n {
 		return 0

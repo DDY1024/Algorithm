@@ -36,17 +36,15 @@ func sloveMod(a, b, c int) int {
 
 	var calcPhi = func(x int) int {
 		res := x
-		for i := 2; i*i <= x; i += 2 {
+		for i := 2; i*i <= x; i++ {
 			if x%i == 0 {
 				res = res / i * (i - 1)
-			}
-			for x%i == 0 {
-				x /= i
-			}
-			if i == 2 {
-				i--
+				for x%i == 0 {
+					x /= i
+				}
 			}
 		}
+		// > sqrt(x) 的素因子
 		if x > 1 {
 			res = res / x * (x - 1)
 		}

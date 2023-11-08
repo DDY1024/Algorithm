@@ -1,7 +1,9 @@
 package main
 
-// https://blog.csdn.net/lvshubao1314/article/details/43964889
-// 1. 点双连通分量、边双连通分量
+// 1. 割点
+// 2. 割边
+// 3. 点双连通分量
+// 4. 边双连通分量
 
 type Edge struct {
 	u, v, next int
