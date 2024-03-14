@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -27,9 +26,4 @@ func stdShuffle(arr []int) []int {
 		arr[i], arr[j] = arr[j], arr[i]
 	})
 	return arr
-}
-
-func main() {
-	arr := []int{1, 2, 3, 4}
-	fmt.Println(stdShuffle(arr))
 }
