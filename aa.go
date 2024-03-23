@@ -74,7 +74,7 @@ func main() {
 	n, _ := new(big.Int).SetString("413575856737258899661", 10)
 
 	publicExp, _ := new(big.Int).SetString("65537", 10)
-	privateExp, _ := new(big.Int).SetString("TODO", 10)
+	privateExp, _ := new(big.Int).SetString("TODO", 10) // 286493588629981024577
 
 	publicKey := Key{N: n, Exp: publicExp}
 	privateKey := Key{N: n, Exp: privateExp}

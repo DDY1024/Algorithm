@@ -1,12 +1,12 @@
 package other
 
 import (
+	"math"
 	"math/rand"
 	"time"
 )
 
 const (
-	inf      = 0x3f3f3f3f3f3f3f3f
 	maxLevel = 20
 )
 
@@ -61,7 +61,7 @@ func NewSkiplist() Skiplist {
 	return Skiplist{
 		level: 0,
 		size:  0,
-		head:  NewNode(-inf, -inf, maxLevel), // head 节点存储 key 的最小值
+		head:  NewNode(math.MinInt, math.MinInt, maxLevel), // head 节点存储 key 的最小值
 	}
 }
 
